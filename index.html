@@ -62,11 +62,18 @@
 <style>
 :root{
   --bg:#f6f2ea;
+  --bg-alt:#efe8da;
   --ink:#242019;
   --ink-mid:#5c5648;
   --line:#ddd4c3;
   --accent:#b5542e;
+  --accent-dark:#7a3a1f;
   --accent-ink:#f6f2ea;
+  --green:#3f6b3f;
+  --green-bg:#e7efdf;
+  --green-border:#c7d9b8;
+  --red:#a4432f;
+  --red-bg:#f3e4de;
 }
 *{box-sizing:border-box;}
 html{-webkit-text-size-adjust:100%;}
@@ -178,6 +185,145 @@ footer a:hover{color:var(--ink);border-color:var(--accent);}
   .cta-row{flex-direction:column;}
   .btn{text-align:center;}
 }
+
+/* ══ Kalendarz rezerwacji — popup ══ */
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--ink);color:var(--bg);padding:12px 22px;border-radius:6px;font-size:0.92rem;opacity:0;pointer-events:none;transition:0.3s;z-index:3000;}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+.toast.error{background:var(--red);}
+
+.cal-modal-overlay{position:fixed;inset:0;background:rgba(36,32,25,0.55);z-index:2300;display:flex;align-items:center;justify-content:center;padding:16px;box-sizing:border-box;opacity:0;pointer-events:none;transition:opacity 0.25s;}
+.cal-modal-overlay.open{opacity:1;pointer-events:auto;}
+.cal-modal-content{width:100%;max-width:600px;max-height:calc(100vh - 32px);max-height:calc(100dvh - 32px);margin:0 auto;position:relative;box-sizing:border-box;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;border-radius:14px;background:var(--bg);border:1px solid var(--line);}
+.cal-modal-closebar{position:sticky;top:0;z-index:6;display:flex;justify-content:flex-end;padding:10px 10px 0;pointer-events:none;}
+.cal-modal-close{pointer-events:auto;background:var(--bg);border:1px solid var(--line);border-radius:50%;width:36px;height:36px;cursor:pointer;font-size:1rem;color:var(--ink);font-family:Georgia,serif;}
+@media(max-width:600px){.cal-modal-overlay{padding:0;align-items:flex-end;}.cal-modal-content{max-width:100%;max-height:92vh;max-height:92dvh;border-radius:14px 14px 0 0;}}
+
+.cal-widget-wrap{margin:0;padding:6px 22px 24px;text-align:left;font-family:Georgia,serif;}
+.cal-widget-header{margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;gap:10px;}
+.cal-widget-title{font-size:1.1rem;font-weight:bold;color:var(--ink);}
+.cal-widget-range{font-size:0.8rem;color:var(--ink-mid);margin-top:2px;}
+.cal-widget-nav{display:flex;gap:8px;flex-shrink:0;}
+.cal-widget-nav button{width:32px;height:32px;border-radius:50%;border:1.5px solid var(--line);background:var(--bg);color:var(--ink);font-size:1rem;cursor:pointer;font-family:Georgia,serif;transition:0.2s;}
+.cal-widget-nav button:hover:not(:disabled){border-color:var(--accent);color:var(--accent);}
+.cal-widget-nav button:disabled{opacity:0.3;cursor:not-allowed;}
+
+.weekday-row{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin-bottom:6px;}
+.weekday-row span{text-align:center;font-size:0.68rem;font-weight:bold;color:var(--ink-mid);text-transform:uppercase;letter-spacing:0.05em;}
+.days-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin-bottom:6px;}
+.day-cell{aspect-ratio:1;border-radius:9px;border:1.5px solid var(--line);background:var(--bg-alt);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;cursor:default;position:relative;transition:0.15s;padding:4px 2px;}
+.day-cell.past{opacity:0.35;}
+.day-cell.closed{background:var(--bg-alt);}
+.day-cell.available{background:var(--green-bg);border-color:var(--green-border);cursor:pointer;}
+.day-cell.available:hover{transform:translateY(-2px);}
+.day-cell.full{background:var(--red-bg);border-color:#e0bdae;}
+.day-cell.selected{outline:2px solid var(--ink);outline-offset:1px;}
+.day-cell.today{border-width:2px;border-color:var(--accent);}
+.day-num{font-size:0.88rem;font-weight:bold;color:var(--ink);line-height:1;}
+.day-cell.closed .day-num,.day-cell.past .day-num{color:var(--ink-mid);}
+.day-sun{width:22px;height:22px;}
+.cal-loading{text-align:center;padding:30px 0;color:var(--ink-mid);font-size:0.9rem;}
+.cal-error{text-align:center;padding:16px;color:var(--red);font-size:0.85rem;background:var(--red-bg);border-radius:9px;}
+
+.detail-panel{margin-top:18px;padding-top:18px;border-top:1px solid var(--line);display:none;}
+.detail-panel.show{display:block;}
+.color-legend{display:flex;gap:14px;flex-wrap:wrap;margin-top:12px;font-size:0.74rem;color:var(--ink-mid);}
+.color-legend span{display:inline-flex;align-items:center;gap:5px;}
+.cl-dot{width:9px;height:9px;border-radius:50%;display:inline-block;}
+.cl-dot.cl-gold{background:var(--accent);}
+.cl-dot.cl-blue{background:#3b6b8a;}
+.cl-dot.cl-green{background:var(--green);}
+
+.slots-heading{font-size:0.88rem;font-weight:bold;color:var(--ink);margin-bottom:10px;}
+.slots-grid{display:flex;flex-wrap:wrap;gap:8px;}
+.no-slots{color:var(--ink-mid);font-size:0.85rem;}
+.slot-pill{padding:9px 16px 9px 13px;border-radius:10px;font-size:0.86rem;font-weight:bold;border:1.5px solid transparent;cursor:pointer;transition:0.2s;display:inline-flex;align-items:center;gap:6px;font-family:Georgia,serif;}
+.slot-pill svg{width:13px;height:13px;flex-shrink:0;}
+.slot-pill-gold{background:#f3e3d4;color:var(--accent-dark);border-color:#e3c3a3;}
+.slot-pill-gold svg circle,.slot-pill-gold svg path{stroke:var(--accent-dark);}
+.slot-pill-gold:hover{background:var(--accent);color:#fff;}
+.slot-pill-gold:hover svg circle,.slot-pill-gold:hover svg path{stroke:#fff;}
+.slot-pill-green{background:var(--green-bg);color:var(--green);border-color:var(--green-border);}
+.slot-pill-green svg circle,.slot-pill-green svg path{stroke:var(--green);}
+.slot-pill-green:hover{background:var(--green);color:#fff;}
+.slot-pill-green:hover svg circle,.slot-pill-green:hover svg path{stroke:#fff;}
+.slot-pill-blue{background:#dce8f0;color:#2c5272;border-color:#b7d0e0;}
+.slot-pill-blue svg circle,.slot-pill-blue svg path{stroke:#2c5272;}
+.slot-pill-blue:hover{background:#3b6b8a;color:#fff;}
+.slot-pill-blue:hover svg circle,.slot-pill-blue:hover svg path{stroke:#fff;}
+.slot-pill.selected{background:var(--ink) !important;color:#fff !important;border-color:var(--ink) !important;}
+.slot-pill.selected svg circle,.slot-pill.selected svg path{stroke:#fff !important;}
+
+.book-panel{margin-top:18px;padding:20px;border-radius:12px;background:var(--ink);display:none;position:relative;}
+.book-panel.show{display:block;}
+.book-panel h3{color:var(--bg);font-size:1.1rem;margin:0 36px 6px 0;font-family:Georgia,serif;}
+.book-when{color:#fff;font-size:0.92rem;font-weight:bold;margin-bottom:14px;}
+.mode-row{display:flex;align-items:center;gap:8px;margin-bottom:10px;background:rgba(255,255,255,0.08);border-radius:9px;padding:10px 12px;}
+.mode-row input[type=checkbox]{width:16px;height:16px;margin:0;accent-color:var(--accent);cursor:pointer;}
+.mode-row input[type=checkbox]:disabled{cursor:not-allowed;opacity:0.5;}
+.mode-row span{font-size:0.8rem;color:rgba(255,255,255,0.85);}
+.mode-row-locked{opacity:0.9;}
+.mode-check-locked{width:16px;height:16px;border-radius:4px;display:inline-flex;align-items:center;justify-content:center;font-size:10px;font-weight:900;flex-shrink:0;line-height:1;}
+.mode-check-locked.on{background:var(--green);color:#fff;}
+.mode-check-locked.off{background:transparent;border:1.5px solid rgba(255,255,255,0.4);color:transparent;}
+.mode-strike{text-decoration:line-through;opacity:0.7;}
+.mode-note{font-size:0.74rem;color:rgba(255,255,255,0.55);margin:-4px 0 10px;line-height:1.5;}
+.book-panel input,.book-panel textarea,.book-panel select{width:100%;padding:10px 14px;margin-bottom:10px;border-radius:9px;border:1px solid #ddd;font-family:Georgia,serif;box-sizing:border-box;font-size:0.88rem;background:#fff;color:#242019;}
+.phone-row{display:flex;gap:8px;margin-bottom:10px;}
+.phone-prefix{flex-shrink:0;display:flex;align-items:center;justify-content:center;padding:0 12px;border-radius:9px;background:rgba(255,255,255,0.12);color:#fff;font-weight:bold;font-size:0.88rem;}
+.phone-row input{margin-bottom:0;}
+.book-panel textarea{height:50px;resize:none;}
+.book-panel input#bAddr:disabled{background:#f1f5f9;color:#64748b;cursor:not-allowed;}
+.book-submit{width:100%;background:var(--accent);color:#fff;border:none;padding:13px;border-radius:8px;font-weight:bold;cursor:pointer;font-family:Georgia,serif;font-size:0.9rem;transition:0.2s;}
+.book-submit:hover{opacity:0.9;}
+.book-submit:disabled{opacity:0.4;cursor:not-allowed;}
+.book-status{margin-top:10px;font-size:0.85rem;text-align:center;color:#8fd19e;}
+.book-error{color:#e8a089;font-size:0.8rem;margin:-2px 0 10px;}
+.book-confirm-overlay{display:none;position:absolute;inset:0;background:rgba(36,32,25,0.8);border-radius:12px;align-items:center;justify-content:center;padding:24px;z-index:100;}
+.book-confirm-overlay.show{display:flex;}
+.book-confirm-card{background:var(--ink);border:1px solid rgba(255,255,255,0.15);border-radius:12px;padding:26px 24px;text-align:center;max-width:340px;}
+.book-confirm-check{width:48px;height:48px;border-radius:50%;background:var(--green);color:#fff;font-size:1.4rem;display:flex;align-items:center;justify-content:center;margin:0 auto 14px;}
+.book-confirm-card h4{color:var(--bg);font-size:1.05rem;margin-bottom:8px;font-family:Georgia,serif;}
+.book-confirm-card p{color:rgba(255,255,255,0.8);font-size:0.86rem;line-height:1.6;margin-bottom:18px;}
+.book-confirm-ok{background:var(--accent);color:#fff;border:none;padding:11px 34px;border-radius:8px;font-weight:bold;cursor:pointer;font-family:Georgia,serif;font-size:0.86rem;}
+.book-confirm-ok:hover{opacity:0.9;}
+.cal-step{display:none;}
+.cal-step.show{display:block;}
+.book-step-nav{display:flex;gap:10px;}
+.book-step-nav .book-submit,.book-step-nav .book-btn-outline{margin-bottom:0;}
+.book-btn-outline{flex:1;background:transparent;color:rgba(255,255,255,0.85);border:1.5px solid rgba(255,255,255,0.35);padding:13px;border-radius:8px;font-weight:bold;cursor:pointer;font-family:Georgia,serif;font-size:0.88rem;transition:0.2s;}
+.book-btn-outline:hover{border-color:#fff;color:#fff;}
+.pd-instr-note{font-size:0.76rem;color:rgba(255,255,255,0.6);margin:2px 0 8px;}
+.book-summary{background:rgba(255,255,255,0.08);border-radius:9px;padding:4px 14px;margin-bottom:14px;font-size:0.84rem;color:rgba(255,255,255,0.85);}
+.book-summary .bs-row{display:flex;justify-content:space-between;gap:14px;border-bottom:1px solid rgba(255,255,255,0.1);padding:8px 0;}
+.book-summary .bs-row:last-child{border-bottom:none;}
+.book-summary .bs-row span:first-child{color:rgba(255,255,255,0.55);flex-shrink:0;}
+.book-summary .bs-row b{color:#fff;text-align:right;}
+.close-book{position:absolute;top:14px;right:14px;width:28px;height:28px;border-radius:50%;border:1.5px solid rgba(255,255,255,0.25);background:rgba(255,255,255,0.08);color:rgba(255,255,255,0.7);font-size:0.88rem;line-height:1;cursor:pointer;transition:0.2s;display:flex;align-items:center;justify-content:center;padding:0;}
+.close-book:hover{background:rgba(255,255,255,0.18);color:#fff;}
+.cw-piano-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;}
+.cw-piano-tile{background:rgba(255,255,255,0.08);border:1.5px solid rgba(255,255,255,0.22);border-radius:9px;padding:10px 12px;text-align:left;cursor:pointer;transition:0.2s;font-size:0.82rem;color:rgba(255,255,255,0.85);}
+.cw-piano-tile b{display:block;font-size:0.86rem;color:#fff;}
+.cw-piano-tile.selected{border-color:var(--accent);background:rgba(181,84,46,0.28);}
+.cw-piano-tile.tile-gold{background:rgba(181,84,46,0.14);border-color:rgba(181,84,46,0.5);}
+.cw-piano-tile.tile-gold b{color:#e3a583;}
+.cw-piano-tile.tile-gold.selected{background:var(--accent);border-color:var(--accent);}
+.cw-piano-tile.tile-gold.selected b{color:#fff;}
+.cw-piano-tile.tile-silver{background:rgba(200,208,220,0.14);border-color:rgba(200,208,220,0.5);}
+.cw-piano-tile.tile-silver b{color:#c8d0dc;}
+.cw-piano-tile.tile-silver.selected{background:#8a94a3;border-color:#8a94a3;}
+.cw-piano-tile.tile-silver.selected b{color:#242019;}
+.cw-price-box{background:rgba(255,255,255,0.08);border:2px dashed var(--accent);border-radius:9px;padding:12px 14px;margin-bottom:12px;text-align:center;}
+.cw-price-old{text-decoration:line-through;color:rgba(255,255,255,0.4);font-size:1rem;font-weight:600;margin-right:8px;}
+.cw-price-new{color:#8fd19e;font-size:1.4rem;font-weight:bold;}
+.cw-price-plain{color:#fff;font-size:1.3rem;font-weight:bold;}
+.cw-price-note{font-size:0.72rem;color:rgba(255,255,255,0.5);margin-top:6px;line-height:1.5;}
+.pd-info-wrap{position:relative;display:inline-flex;vertical-align:middle;margin-left:6px;}
+.pd-info-icon{width:15px;height:15px;border-radius:50%;background:var(--accent);color:#fff;font-size:0.6rem;font-weight:800;font-style:italic;display:inline-flex;align-items:center;justify-content:center;cursor:help;line-height:1;flex-shrink:0;}
+.pd-info-tooltip{visibility:hidden;opacity:0;position:absolute;z-index:60;bottom:135%;left:50%;transform:translateX(-50%) translateY(-6px);width:190px;background:var(--accent-dark);color:#fff;text-align:left;border-radius:9px;padding:10px 12px;font-size:0.72rem;line-height:1.55;font-weight:400;box-shadow:0 10px 28px rgba(0,0,0,0.28);transition:opacity 0.2s,transform 0.2s;pointer-events:none;}
+.pd-info-tooltip::after{content:"";position:absolute;top:100%;left:50%;margin-left:-6px;border-width:6px;border-style:solid;border-color:var(--accent-dark) transparent transparent transparent;}
+.pd-info-wrap:hover .pd-info-tooltip{visibility:visible;opacity:1;transform:translateX(-50%) translateY(-10px);}
+@media(max-width:420px){.day-num{font-size:0.78rem;}.day-sun{width:18px;height:18px;}}
+
 </style>
 </head>
 <body>
@@ -194,7 +340,7 @@ footer a:hover{color:var(--ink);border-color:var(--accent);}
     <h1>Zajęcie dla Twojego rodzica, które ma sens.</h1>
     <p class="lede">Przyjeżdżam do seniora z pianinem, uczę w jego tempie, bez presji i egzaminów. Ty masz z głowy jedną rzecz do ogarnięcia.</p>
     <div class="cta-row">
-      <a class="btn btn-solid" href="https://lekcjepianinagdynia.pl/#terminy">Zarezerwuj termin</a>
+      <a class="btn btn-solid" href="#" onclick="openCalModal();return false;">Zarezerwuj termin</a>
       <a class="btn btn-outline" href="tel:514338875">Zadzwoń: 514 338 875</a>
     </div>
   </div>
@@ -224,7 +370,7 @@ footer a:hover{color:var(--ink);border-color:var(--accent);}
       <div class="eyebrow">Dlaczego to ma sens</div>
       <ul class="plain">
         <li>Konkretna, regularna aktywność — nie kolejny pomysł, który nigdy nie dojdzie do skutku.</li>
-        <li>Kontakt z drugą osobą, raz w tygodniu, bez wymówek.</li>
+        <li>Kontakt z drugą osobą, raz w tygodniu.</li>
         <li>Nauka nowej umiejętności wspiera pamięć i sprawność rąk, niezależnie od wieku.</li>
         <li>Nie trzeba niczego zdawać ani się popisywać.</li>
       </ul>
@@ -288,7 +434,7 @@ footer a:hover{color:var(--ink);border-color:var(--accent);}
       </ul>
     </div>
     <div class="footer-cta-col">
-      <a href="https://lekcjepianinagdynia.pl/#terminy" class="btn btn-solid">Zarezerwuj termin</a>
+      <a href="#" class="btn btn-solid" onclick="openCalModal();return false;">Zarezerwuj termin</a>
     </div>
   </div>
   <div class="wrap footer-bottom">
@@ -296,6 +442,924 @@ footer a:hover{color:var(--ink);border-color:var(--accent);}
     <span>© 2026 Pianino dla Seniora – Łukasz Ganczarek · <a href="/polityka-prywatnosci.html">Polityka prywatności</a></span>
   </div>
 </footer>
+
+<div class="toast" id="toast"></div>
+
+<div class="cal-modal-overlay" id="calModalOverlay" onclick="if(event.target===this)closeCalModal()">
+  <div class="cal-modal-content">
+    <div class="cal-modal-closebar"><button class="cal-modal-close" onclick="closeCalModal()" aria-label="Zamknij" title="Zamknij">✕</button></div>
+
+    <div class="cal-widget-wrap" id="calWidgetWrap">
+      <div class="cal-widget-header">
+        <div>
+          <div class="cal-widget-title">Wybierz wolny termin zajęć i umów lekcję</div>
+          <div class="cal-widget-range" id="calRange">—</div>
+        </div>
+        <div class="cal-widget-nav">
+          <button id="prevBtn" onclick="shiftCalWeeks(-14)" aria-label="Poprzednie dwa tygodnie">‹</button>
+          <button id="nextBtn" onclick="shiftCalWeeks(14)" aria-label="Następne dwa tygodnie">›</button>
+        </div>
+      </div>
+
+      <div class="weekday-row">
+        <span>Pn</span><span>Wt</span><span>Śr</span><span>Cz</span><span>Pt</span><span>So</span><span>Nd</span>
+      </div>
+
+      <div id="calWarning"></div>
+      <div id="calBody">
+        <div class="cal-loading">Ładowanie kalendarza…</div>
+      </div>
+
+      <div class="color-legend">
+        <span><i class="cl-dot cl-gold"></i>u ucznia</span>
+        <span><i class="cl-dot cl-blue"></i>u nauczyciela</span>
+        <span><i class="cl-dot cl-green"></i>u nauczyciela lub u ucznia</span>
+      </div>
+
+      <div class="detail-panel" id="detailPanel">
+        <div class="slots-heading" id="slotsHeading"></div>
+        <div class="slots-grid" id="slotsGrid"></div>
+      </div>
+
+      <div class="book-panel" id="calBookPanel">
+        <button class="close-book" onclick="closeCalBook()" aria-label="Zamknij" title="Zamknij">✕</button>
+        <h3>Zarezerwuj termin</h3>
+        <div class="book-when" id="calBookWhen"></div>
+        <div class="book-error" id="calBookError"></div>
+
+        <div class="cal-step show" id="calStep1">
+          <div class="cw-price-box" id="calPriceBox"></div>
+
+          <div id="calModeArea"></div>
+
+          <input type="text" id="calPromo" placeholder="Kod rabatowy (opcjonalnie)" oninput="recalcCalBooking()">
+
+          <div id="calPianoArea" style="display:none;">
+            <div class="cw-piano-row">
+              <div class="cw-piano-tile selected" id="calPianoYes" onclick="calSetPiano(true)"><b>Mam pianino</b>bez dopłaty</div>
+              <div class="cw-piano-tile" id="calPianoNo" onclick="calSetPiano(false)"><b>Nie mam</b>dowóz instrumentu</div>
+            </div>
+            <div id="calInstrumentArea" style="display:none;">
+              <p class="pd-instr-note">Wybierz pianino, które ma zostać do Ciebie dostarczone:</p>
+              <div class="cw-piano-row">
+                <div class="cw-piano-tile tile-silver selected" id="calInstrEco" onclick="calSetInstrument('eco')"><b>Roland GO:PIANO88PX<span class="pd-info-wrap" onclick="event.stopPropagation()"><span class="pd-info-icon">i</span><span class="pd-info-tooltip">Lekki, przenośny keyboard cyfrowy. 88 klawiszy o dotyku zbliżonym do fortepianu, wbudowane głośniki. Dobry wybór na pierwsze miesiące nauki. W cenie dowozu wliczony jest również stojak pod instrument.</span></span></b>19 zł</div>
+                <div class="cw-piano-tile tile-gold" id="calInstrPremium" onclick="calSetInstrument('premium')"><b>Yamaha P-525<span class="pd-info-wrap" onclick="event.stopPropagation()"><span class="pd-info-icon">i</span><span class="pd-info-tooltip">Zaawansowane pianino cyfrowe z ważoną mechaniką klawiatury i realistycznym brzmieniem akustycznym. Dla uczniów zaawansowanych i przygotowujących się do egzaminów. W cenie dowozu wliczony jest również stojak pod instrument.</span></span></b>49 zł</div>
+              </div>
+            </div>
+          </div>
+
+          <button class="book-submit" id="calStep1NextBtn" onclick="calGoStep(2)">DALEJ →</button>
+        </div>
+
+        <div class="cal-step" id="calStep2">
+          <input type="text" id="calName" placeholder="Imię" oninput="recalcCalBooking()">
+          <div class="phone-row">
+            <span class="phone-prefix">+48</span>
+            <input type="tel" id="calPhone" placeholder="123 456 789" oninput="calPhoneInput(this)">
+          </div>
+          <input type="email" id="calEmail" placeholder="Adres email" oninput="recalcCalBooking()">
+          <div id="calAddrWrap">
+            <select id="calCity" onchange="recalcCalBooking()">
+              <option value="Gdynia" selected>Gdynia</option>
+              <option value="Sopot">Sopot</option>
+            </select>
+            <input type="text" id="calStreet" placeholder="Ulica i numer mieszkania" oninput="recalcCalBooking()">
+          </div>
+          <div class="book-step-nav">
+            <button class="book-btn-outline" onclick="calGoStep(1)">← COFNIJ</button>
+            <button class="book-submit" onclick="calGoStep(3)">PODSUMUJ →</button>
+          </div>
+        </div>
+
+        <div class="cal-step" id="calStep3">
+          <div class="book-summary" id="calSummary"></div>
+          <div class="book-step-nav">
+            <button class="book-btn-outline" onclick="calGoStep(2)">← COFNIJ</button>
+            <button class="book-submit" id="calBookSubmitBtn" onclick="submitCalBooking()">ZAREZERWUJ TERMIN</button>
+          </div>
+          <div class="book-status" id="calBookStatus"></div>
+        </div>
+
+        <div class="book-confirm-overlay" id="calConfirmOverlay">
+          <div class="book-confirm-card">
+            <div class="book-confirm-check">✓</div>
+            <h4>Lekcja zarezerwowana</h4>
+            <p>Niedługo skontaktuje się z Państwem nauczyciel, żeby potwierdzić termin zajęć.</p>
+            <button class="book-confirm-ok" onclick="closeCalBookConfirm()">OK</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const FORM_WEBHOOK = "https://hook.eu1.make.com/3w8cbmpc1v3fff8k0qq4fk6w8mo81wd6";
+const OWNER_EMAIL = "lukaszgkorepetycje@gmail.com";
+
+function showToast(msg,isError=false){const t=document.getElementById('toast');t.textContent=msg;t.className='toast'+(isError?' error':'');t.classList.add('show');setTimeout(()=>t.classList.remove('show'),4000);}
+
+const PROMO_CODE='lekcjaprobna',PROMO_DISCOUNT=0.6;
+const LESSON_BASE_PRICE=119;
+function formatPLN(n){return n.toFixed(2).replace('.',',').replace(',00','');}
+
+let calModalInited = false;
+function openCalModal(){
+  document.getElementById('calModalOverlay').classList.add('open');
+  document.body.style.overflow='hidden';
+  if(!calModalInited){ calModalInited = true; initCalWidget(); }
+}
+function closeCalModal(){
+  document.getElementById('calModalOverlay').classList.remove('open');
+  document.body.style.overflow='';
+}
+
+const CT = {
+    monthNames: ['styczeń','luty','marzec','kwiecień','maj','czerwiec','lipiec','sierpień','wrzesień','październik','listopad','grudzień'],
+    weekdayFull: ['niedziela','poniedziałek','wtorek','środa','czwartek','piątek','sobota'],
+    weekdayShort: ['Pn','Wt','Śr','Cz','Pt','So','Nd'],
+    loading: 'Ładowanie kalendarza…',
+    noConnect: 'Nie udało się pobrać kalendarza.',
+    calWarnPrefix: '⚠ Kalendarz nie odpowiedział poprawnie: ',
+    calWarnSuffix: '. Widoczna dostępność może być niepełna.',
+    chooseTime: 'Wybierz godzinę — ',
+    noSlots: 'Brak dostępnych godzin tego dnia.',
+    tipEither: 'Dostępne u ucznia lub u nauczyciela — do wyboru.',
+    tipTeacherOnly: 'Dostępne wyłącznie u nauczyciela.',
+    tipStudentOnly: 'Dostępne u ucznia (dojazd).',
+    tipBusy: 'Zajęte.',
+    lessonAtTeacher: 'Lekcja u nauczyciela (',
+    lockedOnlyTeacherNote: 'Ta godzina jest dostępna wyłącznie u nauczyciela — nie można jej odznaczyć.',
+    lockedOnlyStudentNote: 'Ta godzina wymaga dojazdu do ucznia — nie można wybrać lekcji u nauczyciela.',
+    discountNote1: 'Rabat nie obejmuje dowozu instrumentu (',
+    discountNote2: ' zł).',
+    errFillContact: 'Wypełnij imię, telefon (9 cyfr) i email.',
+    errFillStreet: 'Wpisz ulicę i numer mieszkania.',
+    errBuffer: 'Ta godzina nie mieści się z zachowaniem wymaganego odstępu od sąsiednich zajęć.',
+    timeConnector: ', godz. ',
+    sumTermin: 'Termin', sumMiejsce: 'Miejsce', sumPianino: 'Pianino',
+    sumHasPiano: 'Masz własne pianino', sumDelivery: 'Dowóz: ',
+    sumAddress: 'Adres', sumName: 'Imię i nazwisko', sumPhone: 'Telefon', sumEmail: 'Email',
+    sumPromo: 'Kod rabatowy', sumPromoValid: ' ✓', sumPromoInvalid: ' (nieprawidłowy)', sumPrice: 'Cena',
+    modeAtTeacher: 'U nauczyciela (', modeAtStudent: 'U ucznia — dojazd',
+    sending: '⏳ Wysyłanie...', bookedToast: '✅ Zarezerwowano!',
+    sendErr: '❌ Błąd wysyłki. Zadzwoń: 514 338 875', sendErrToast: 'Błąd wysyłki.'
+};
+
+/* ══════════════════ WIDGET KALENDARZA DOSTĘPNOŚCI ══════════════════ */
+const CAL_API_KEY = 'AIzaSyCTvjSUJmUqU5maY-0TyYT8aVi5Yu2jIWk';
+/* Sprawdzamy WYŁĄCZNIE kalendarz zajętości nauczyciela */
+const CALENDAR_IDS = [
+  'c665a3faafe4bd078333ac7d55a5b2e13a042fc246cceb43e8e3af111ed2394b@group.calendar.google.com'
+];
+const TEACHER_ADDRESS = 'Lipnowska 17/2, Gdynia';
+const DAYS_AHEAD = 14;
+
+const MNIE_DURATION = 60;
+const BUFFER_SAME_TEACHER = 5;  /* obie lekcje (istniejąca i nowa) potwierdzone u nauczyciela */
+const BUFFER_DEFAULT = 30;      /* nie da się potwierdzić lokalizacji sąsiedniej lekcji, lub któraś jest u ucznia */
+const UCZEN_DURATIONS = [60,75,90];
+
+const MONTH_NAMES = CT.monthNames;
+const WEEKDAY_FULL = CT.weekdayFull;
+
+let busyIntervals = [];
+let dayStates = {};
+let dayList = [];
+let selectedDateKey = null;
+let lastCalErrors = [];
+let bookCtx = null;
+let calPianoHas = true;
+let calInstrumentType = 'eco';
+let currentStartMonday = null;
+
+const WEEKS_AHEAD_LIMIT = 8; /* jak daleko w przyszłość można przewinąć (8 x 2 tygodnie = ok. 4 miesiące) */
+
+const calToday = new Date();
+calToday.setHours(0,0,0,0);
+
+function mondayOf(date){
+  const d = new Date(date);
+  const day = d.getDay();
+  const diff = (day===0 ? -6 : 1-day);
+  d.setDate(d.getDate()+diff);
+  d.setHours(0,0,0,0);
+  return d;
+}
+
+function buildDayList(){
+  dayList = [];
+  for(let i=0;i<DAYS_AHEAD;i++){
+    const d = new Date(currentStartMonday);
+    d.setDate(d.getDate()+i);
+    dayList.push(d);
+  }
+  const first = dayList[0], last = dayList[dayList.length-1];
+  document.getElementById('calRange').textContent =
+    first.getDate()+' '+MONTH_NAMES[first.getMonth()]+' – '+last.getDate()+' '+MONTH_NAMES[last.getMonth()]+' '+last.getFullYear();
+
+  const baseMonday = mondayOf(calToday);
+  document.getElementById('prevBtn').disabled = currentStartMonday.getTime() <= baseMonday.getTime();
+  const maxMonday = new Date(baseMonday); maxMonday.setDate(maxMonday.getDate()+WEEKS_AHEAD_LIMIT*14);
+  document.getElementById('nextBtn').disabled = currentStartMonday.getTime() >= maxMonday.getTime();
+}
+
+function shiftCalWeeks(deltaDays){
+  const d = new Date(currentStartMonday);
+  d.setDate(d.getDate()+deltaDays);
+  currentStartMonday = d;
+  buildDayList();
+  renderCalDays();
+}
+
+function initCalWidget(){
+  if(!document.getElementById('calBody')) return;
+  currentStartMonday = mondayOf(calToday);
+  buildDayList();
+  renderCalDays();
+}
+
+function calDateKey(y,m,d){ return y+'-'+String(m+1).padStart(2,'0')+'-'+String(d).padStart(2,'0'); }
+
+function getDayWindows(weekday){
+  if(weekday===3){
+    return [
+      {mode:'uczen', start:8, end:16},
+      {mode:'mnie', start:16, end:21}
+    ];
+  }
+  if(weekday===4){
+    return [
+      {mode:'both', start:8, end:15},
+      {mode:'uczen', start:15, end:21}
+    ];
+  }
+  if(weekday===1 || weekday===2 || weekday===5){
+    return [{mode:'uczen', start:8, end:21}];
+  }
+  return [];
+}
+
+/* Stałe, zawsze zajęte okna co tydzień — niezależnie od tego, czy w
+   kalendarzu Google jest tam realne wydarzenie. Dołączane do busyIntervals
+   tak samo jak prawdziwe wydarzenia, więc obowiązuje przy nich ten sam
+   bufor przed/po co przy każdej innej zajętości (lokalizacja nieznana →
+   domyślny, 30-minutowy odstęp). */
+const RECURRING_BLOCKS = [
+  {weekday:1, start:15, end:18}, /* poniedziałek 15:00–18:00 */
+  {weekday:3, start:8,  end:15}, /* środa od rana do 15:00 */
+];
+function getRecurringBlocks(rangeStart, rangeEnd){
+  const blocks = [];
+  const d = new Date(rangeStart);
+  d.setHours(0,0,0,0);
+  const end = new Date(rangeEnd);
+  while(d <= end){
+    RECURRING_BLOCKS.forEach(rb=>{
+      if(d.getDay() === rb.weekday){
+        const start = new Date(d); start.setHours(rb.start,0,0,0);
+        const stop = new Date(d); stop.setHours(rb.end,0,0,0);
+        blocks.push({start, end: stop, atTeacher: null});
+      }
+    });
+    d.setDate(d.getDate()+1);
+  }
+  return blocks;
+}
+
+async function fetchBusyForRange(rangeStart, rangeEnd){
+  const timeMin = rangeStart.toISOString();
+  const timeMax = rangeEnd.toISOString();
+
+  const url = 'https://www.googleapis.com/calendar/v3/freeBusy?key='+CAL_API_KEY;
+  const res = await fetch(url, {
+    method: 'POST',
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({
+      timeMin: timeMin,
+      timeMax: timeMax,
+      items: CALENDAR_IDS.map(id=>({id}))
+    })
+  });
+
+  if(!res.ok){
+    const body = await res.text();
+    throw new Error('HTTP '+res.status+' '+body.slice(0,200));
+  }
+
+  const data = await res.json();
+  const intervals = [];
+  const calErrors = [];
+
+  for(const calId of CALENDAR_IDS){
+    const calData = data.calendars && data.calendars[calId];
+    if(!calData){ calErrors.push(calId+': brak odpowiedzi'); continue; }
+    if(calData.errors && calData.errors.length){
+      calErrors.push(calId.slice(0,10)+'…: '+calData.errors[0].reason);
+      continue;
+    }
+    (calData.busy||[]).forEach(b=>{
+      intervals.push({start:new Date(b.start), end:new Date(b.end)});
+    });
+  }
+
+  if(calErrors.length){
+    console.warn('Niektóre kalendarze zwróciły błąd:', calErrors);
+  }
+  lastCalErrors = calErrors;
+  return intervals;
+}
+
+/* Próbuje dociągnąć lokalizację (location) wydarzeń w zadanym zakresie,
+   żeby rozpoznać, które zajęte terminy są "u nauczyciela" — tylko wtedy
+   można zastosować krótszy, 5-minutowy odstęp. Jeśli kalendarz ma
+   ukryte szczegóły (widoczne tylko zajęte/wolne) albo zapytanie się nie
+   powiedzie z jakiegokolwiek innego powodu, po prostu nic nie zwracamy —
+   wywołujący kod bezpiecznie potraktuje taki termin jako "nieznany"
+   i zastosuje domyślny, dłuższy odstęp.*/
+async function fetchEventLocationsForRange(rangeStart, rangeEnd){
+  const map = new Map();
+  for(const calId of CALENDAR_IDS){
+    try{
+      const url = 'https://www.googleapis.com/calendar/v3/calendars/'+encodeURIComponent(calId)+'/events'
+        + '?key='+CAL_API_KEY
+        + '&timeMin='+encodeURIComponent(rangeStart.toISOString())
+        + '&timeMax='+encodeURIComponent(rangeEnd.toISOString())
+        + '&singleEvents=true'
+        + '&fields='+encodeURIComponent('items(start,end,location)');
+      const res = await fetch(url);
+      if(!res.ok) continue;
+      const data = await res.json();
+      (data.items||[]).forEach(ev=>{
+        if(!ev.start || !ev.start.dateTime || !ev.end || !ev.end.dateTime) return; /* pomijamy wydarzenia całodniowe */
+        /* Normalizujemy do UTC ISO, bo events.list zwraca dateTime z przesunięciem
+           strefy wydarzenia (np. "+02:00"), a freeBusy — zawsze w UTC ("Z"); bez
+           tego klucze nigdy by się nie zgadzały i atTeacher byłby zawsze nieznany. */
+        const key = new Date(ev.start.dateTime).toISOString()+'|'+new Date(ev.end.dateTime).toISOString();
+        map.set(key, ev.location || '');
+      });
+    }catch(err){
+      /* brak lokalizacji dla tego kalendarza — zajęte terminy zostaną potraktowane jako nieznane */
+    }
+  }
+  return map;
+}
+
+/* Łączy listę zajętych przedziałów z informacją o lokalizacji: każdy
+   przedział dostaje atTeacher = true (potwierdzone u nauczyciela),
+   false (potwierdzone u ucznia / inny adres) albo null (nie da się
+   sprawdzić — np. kalendarz ukrywa szczegóły). */
+function annotateBusyWithLocation(intervals, locationMap){
+  return intervals.map(iv=>{
+    const key = iv.start.toISOString()+'|'+iv.end.toISOString();
+    if(!locationMap.has(key)) return {start:iv.start, end:iv.end, atTeacher:null};
+    const loc = (locationMap.get(key)||'').trim().toLowerCase();
+    const atTeacher = loc.length>0 && loc === TEACHER_ADDRESS.trim().toLowerCase();
+    return {start:iv.start, end:iv.end, atTeacher};
+  });
+}
+
+function bufferForCandidate(mode, atTeacher){
+  return (mode==='mnie' && atTeacher===true) ? BUFFER_SAME_TEACHER : BUFFER_DEFAULT;
+}
+
+function isCandidateValid(start, end, mode, windows, busy){
+  const fitsWindow = windows.some(w=>{
+    const wStart = new Date(start); wStart.setHours(w.start,0,0,0);
+    const wEnd = new Date(start); wEnd.setHours(w.end,0,0,0);
+    const modeOk = mode==='mnie' ? (w.mode==='mnie'||w.mode==='both') : (w.mode==='uczen'||w.mode==='both');
+    return modeOk && start>=wStart && end<=wEnd;
+  });
+  if(!fitsWindow) return false;
+  for(const iv of busy){
+    const buffer = bufferForCandidate(mode, iv.atTeacher);
+    const bufStart = new Date(iv.start.getTime() - buffer*60000);
+    const bufEnd = new Date(iv.end.getTime() + buffer*60000);
+    if(start < bufEnd && end > bufStart) return false;
+  }
+  return true;
+}
+
+/* Zwraca zbiór trybów ('mnie'/'uczen') faktycznie możliwych do zarezerwowania
+   o dokładnej godzinie:minucie — sprawdzając realny bufor wobec zajętości,
+   nie tylko strukturę okien. */
+function candidateModesAt(dayDate, hour, minute, windows, busy){
+  const start = new Date(dayDate); start.setHours(hour, minute, 0, 0);
+  const modes = new Set();
+  const mnieEnd = new Date(start.getTime()+MNIE_DURATION*60000);
+  if(isCandidateValid(start, mnieEnd, 'mnie', windows, busy)) modes.add('mnie');
+  const uczenEnd = new Date(start.getTime()+UCZEN_DURATIONS[0]*60000);
+  if(isCandidateValid(start, uczenEnd, 'uczen', windows, busy)) modes.add('uczen');
+  return modes;
+}
+
+/* Kolor wg lokalizacji: złoty = tylko u ucznia, zielony = do wyboru,
+   niebieski = wyłącznie u nauczyciela. */
+function colorInfoForModes(modes){
+  const hasM = modes.has('mnie'), hasU = modes.has('uczen');
+  if(hasM && hasU) return {key:'green', color:'#3f6b3f', tooltip:CT.tipEither};
+  if(hasM) return {key:'blue', color:'#3b6b8a', tooltip:CT.tipTeacherOnly};
+  return {key:'gold', color:'#b5542e', tooltip:CT.tipStudentOnly};
+}
+
+function computeDayState(dayDate){
+  const isPast = dayDate < calToday;
+  if(isPast) return {status:'past', slots:[], windows:[], candidates:[]};
+
+  const weekday = dayDate.getDay();
+  const windows = getDayWindows(weekday);
+  const isToday = dayDate.getTime() === calToday.getTime();
+  const now = new Date();
+
+  if(windows.length===0) return {status:'closed', slots:[], windows:[], candidates:[]};
+
+  const rangeStart = Math.min.apply(null, windows.map(w=>w.start));
+  const rangeEnd = Math.max.apply(null, windows.map(w=>w.end));
+
+  /* Kandydaci co 30 minut — godzinne lekcje do wyboru o pełnej i połowie
+     godziny, bez dalszego rozbijania na mniejsze interwały. */
+  const candidates = [];
+  for(let totalMin=rangeStart*60; totalMin<rangeEnd*60; totalMin+=30){
+    const hour = Math.floor(totalMin/60), minute = totalMin%60;
+    const start = new Date(dayDate); start.setHours(hour, minute, 0, 0);
+    if(isToday && start <= now) continue;
+    const modes = candidateModesAt(dayDate, hour, minute, windows, busyIntervals);
+    if(modes.size>0) candidates.push({hour, minute, modes});
+  }
+
+  const hourModes = {};
+  candidates.forEach(c=>{
+    if(!hourModes[c.hour]) hourModes[c.hour] = new Set();
+    c.modes.forEach(m=>hourModes[c.hour].add(m));
+  });
+
+  const slots = [];
+  const nowHour = now.getHours();
+  for(let h=rangeStart; h<rangeEnd; h++){
+    if(isToday && h < nowHour) continue;
+    const modes = hourModes[h] || new Set();
+    slots.push({hour:h, free: modes.size>0, modes});
+  }
+  if(slots.length===0) return {status:'closed', slots:[], windows, candidates:[]};
+  return {status: candidates.length>0 ? 'available' : 'full', slots, windows, candidates};
+}
+
+function calSunSVG(slots, windows){
+  const size=24, cx=size/2, cy=size/2;
+  if(slots.length===0){
+    return '<svg class="day-sun" viewBox="0 0 '+size+' '+size+'"><circle cx="'+cx+'" cy="'+cy+'" r="4.5" fill="#ddd4c3"/></svg>';
+  }
+
+  /* Model tarczy zegarowej: 12:00 na górze, godziny różniące się o 12h
+     (np. 8:00 i 20:00) dzielą ten sam promień. Promień świeci się
+     tylko jeśli WSZYSTKIE godziny na nim są wolne. */
+  const posMap = {};
+  slots.forEach(s=>{
+    const pos = s.hour % 12;
+    (posMap[pos] = posMap[pos]||[]).push(s);
+  });
+
+  const rays_data = [];
+  let anyFree = false;
+  for(let p=0;p<12;p++){
+    if(!posMap[p]) continue;
+    const entries = posMap[p];
+    const free = entries.every(e=>e.free);
+    const info = colorInfoForModes(entries[0].modes || new Set());
+    rays_data.push({pos:p, free, info});
+    if(free) anyFree = true;
+  }
+
+  if(!anyFree){
+    return calMoonSVG(size,cx,cy);
+  }
+
+  const rCenter = 5, r1=7, r2=10.5;
+  let rays='';
+  rays_data.forEach(rd=>{
+    const angle = (-90 + rd.pos*30) * Math.PI/180;
+    const x1 = cx + r1*Math.cos(angle), y1 = cy + r1*Math.sin(angle);
+    const x2 = cx + r2*Math.cos(angle), y2 = cy + r2*Math.sin(angle);
+    const color = rd.free ? rd.info.color : '#ddd4c3';
+    const tooltip = rd.free ? rd.info.tooltip : CT.tipBusy;
+    rays += '<g><title>'+tooltip+'</title><line x1="'+x1.toFixed(1)+'" y1="'+y1.toFixed(1)+'" x2="'+x2.toFixed(1)+'" y2="'+y2.toFixed(1)+'" stroke="'+color+'" stroke-width="2" stroke-linecap="round"/></g>';
+  });
+  return '<svg class="day-sun" viewBox="0 0 '+size+' '+size+'">'+rays+'<circle cx="'+cx+'" cy="'+cy+'" r="'+rCenter+'" fill="#f6f2ea" stroke="#b5542e" stroke-width="1.5"/></svg>';
+}
+
+function calMoonSVG(size,cx,cy){
+  const r = 6.5;
+  const bodyId = 'moonMask'+Math.random().toString(36).slice(2,9);
+  return '<svg class="day-sun" viewBox="0 0 '+size+' '+size+'">'
+    + '<defs><mask id="'+bodyId+'"><rect x="0" y="0" width="'+size+'" height="'+size+'" fill="white"/>'
+    + '<circle cx="'+(cx+3)+'" cy="'+(cy-2)+'" r="'+r+'" fill="black"/></mask></defs>'
+    + '<circle cx="'+cx+'" cy="'+cy+'" r="'+r+'" fill="#c9beac" mask="url(#'+bodyId+')"/>'
+    + '</svg>';
+}
+
+async function renderCalDays(){
+  const body = document.getElementById('calBody');
+  body.innerHTML = '<div class="cal-loading">'+CT.loading+'</div>';
+  document.getElementById('detailPanel').classList.remove('show');
+  document.getElementById('calBookPanel').classList.remove('show');
+  selectedDateKey = null;
+
+  document.getElementById('calWarning').innerHTML = '';
+  const rangeStart = dayList[0];
+  const rangeEnd = new Date(dayList[dayList.length-1]);
+  rangeEnd.setHours(23,59,59);
+
+  try{
+    const rawIntervals = await fetchBusyForRange(rangeStart, rangeEnd);
+    const locationMap = await fetchEventLocationsForRange(rangeStart, rangeEnd);
+    busyIntervals = annotateBusyWithLocation(rawIntervals, locationMap).concat(getRecurringBlocks(rangeStart, rangeEnd));
+  }catch(err){
+    body.innerHTML = '<div class="cal-error">'+CT.noConnect+'<br>'+err.message+'</div>';
+    return;
+  }
+
+  if(lastCalErrors.length){
+    document.getElementById('calWarning').innerHTML = '<div class="cal-error" style="margin-bottom:14px;">'+CT.calWarnPrefix+lastCalErrors.join('; ')+CT.calWarnSuffix+'</div>';
+  }
+
+  dayStates = {};
+  let html = '';
+  for(let w=0; w<2; w++){
+    html += '<div class="days-grid'+(w===1?' week2':'')+'">';
+    for(let i=0;i<7;i++){
+      const idx = w*7+i;
+      const d = dayList[idx];
+      const y=d.getFullYear(), m=d.getMonth(), dd=d.getDate();
+      const key = calDateKey(y,m,dd);
+      const state = computeDayState(d);
+      dayStates[key] = state;
+      const isToday = d.getTime()===calToday.getTime();
+      const clickable = state.status==='available';
+      html += '<div class="day-cell '+state.status+(isToday?' today':'')+'" '
+        + (clickable ? 'onclick="selectCalDay(\''+key+'\')"' : '')
+        + '><span class="day-num">'+dd+'</span>'
+        + (state.status==='available'||state.status==='full' ? calSunSVG(state.slots, state.windows) : '')
+        + '</div>';
+    }
+    html += '</div>';
+  }
+  body.innerHTML = html;
+}
+
+function selectCalDay(key){
+  selectedDateKey = key;
+  document.querySelectorAll('.day-cell').forEach(c=>c.classList.remove('selected'));
+  event.currentTarget.classList.add('selected');
+
+  const state = dayStates[key];
+  const [y,m,d] = key.split('-').map(Number);
+  const dateObj = new Date(y,m-1,d);
+  const label = WEEKDAY_FULL[dateObj.getDay()]+', '+d+' '+MONTH_NAMES[m-1]+' '+y;
+  document.getElementById('slotsHeading').textContent = CT.chooseTime+label;
+
+  const grid = document.getElementById('slotsGrid');
+  const candidates = state.candidates || [];
+  if(candidates.length===0){
+    grid.innerHTML = '<span class="no-slots">'+CT.noSlots+'</span>';
+  }else{
+    grid.innerHTML = candidates.map(c=>{
+      const label = String(c.hour).padStart(2,'0')+':'+String(c.minute).padStart(2,'0');
+      const info = colorInfoForModes(c.modes);
+      return '<button class="slot-pill slot-pill-'+info.key+'" title="'+info.tooltip+'" onclick="openCalBook(\''+key+'\','+c.hour+','+c.minute+')"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke-width="2"/><path d="M12 7v5l3.5 2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>'+label+'</button>';
+    }).join('');
+  }
+  document.getElementById('detailPanel').classList.add('show');
+  document.getElementById('calBookPanel').classList.remove('show');
+}
+
+function openCalBook(key, hour, minute){
+  minute = minute || 0;
+  document.querySelectorAll('.slot-pill').forEach(p=>p.classList.remove('selected'));
+  if(typeof event !== 'undefined' && event.currentTarget){ event.currentTarget.classList.add('selected'); }
+
+  const state = dayStates[key];
+  const [y,m,d] = key.split('-').map(Number);
+  const dayDate = new Date(y,m-1,d,0,0,0);
+  const cand = (state.candidates||[]).find(c=>c.hour===hour && c.minute===minute);
+  const avail = cand ? cand.modes : candidateModesAt(dayDate, hour, minute, state.windows, busyIntervals);
+  const bothAvailable = avail.has('mnie') && avail.has('uczen');
+  const defaultMode = avail.has('mnie') ? 'mnie' : 'uczen';
+
+  bookCtx = {
+    key, hour, minute, dayDate, windows: state.windows,
+    mode: defaultMode, bothAvailable,
+    duration: MNIE_DURATION
+  };
+  calResetPianoState();
+
+  const label = WEEKDAY_FULL[dayDate.getDay()]+', '+d+' '+MONTH_NAMES[m-1]+' '+y+', start '+String(hour).padStart(2,'0')+':'+String(minute).padStart(2,'0');
+  document.getElementById('calBookWhen').textContent = label;
+  document.getElementById('calBookStatus').textContent = '';
+
+  const modeArea = document.getElementById('calModeArea');
+  if(bothAvailable){
+    modeArea.innerHTML = '<label class="mode-row"><input type="checkbox" id="calModeMnie" checked onchange="calOnModeToggle()"><span>'+CT.lessonAtTeacher+TEACHER_ADDRESS+')</span></label>';
+  }else if(defaultMode==='mnie'){
+    modeArea.innerHTML = '<div class="mode-row mode-row-locked"><span class="mode-check-locked on">✓</span><span>'+CT.lessonAtTeacher+TEACHER_ADDRESS+')</span></div>'
+      + '<div class="mode-note">'+CT.lockedOnlyTeacherNote+'</div>';
+  }else{
+    modeArea.innerHTML = '<div class="mode-row mode-row-locked"><span class="mode-check-locked off"></span><span class="mode-strike">'+CT.lessonAtTeacher+TEACHER_ADDRESS+')</span></div>'
+      + '<div class="mode-note">'+CT.lockedOnlyStudentNote+'</div>';
+  }
+
+  calApplyModeToUI();
+  document.getElementById('calBookError').textContent = '';
+  calGoStep(1);
+  recalcCalBooking();
+  document.getElementById('calBookPanel').classList.add('show');
+  document.getElementById('calBookPanel').scrollIntoView({behavior:'smooth', block:'nearest'});
+}
+
+function calResetPianoState(){
+  calPianoHas = true;
+  calInstrumentType = 'eco';
+  document.getElementById('calPianoYes').classList.add('selected');
+  document.getElementById('calPianoNo').classList.remove('selected');
+  document.getElementById('calInstrumentArea').style.display = 'none';
+  document.getElementById('calInstrEco').classList.add('selected');
+  document.getElementById('calInstrPremium').classList.remove('selected');
+}
+
+function calSetPiano(v){
+  calPianoHas = v;
+  document.getElementById('calPianoYes').classList.toggle('selected', v);
+  document.getElementById('calPianoNo').classList.toggle('selected', !v);
+  document.getElementById('calInstrumentArea').style.display = v ? 'none' : 'block';
+  recalcCalBooking();
+}
+
+function calSetInstrument(type){
+  calInstrumentType = type;
+  document.getElementById('calInstrEco').classList.toggle('selected', type==='eco');
+  document.getElementById('calInstrPremium').classList.toggle('selected', type==='premium');
+  recalcCalBooking();
+}
+
+function calDeliveryFee(){
+  if(!bookCtx || bookCtx.mode!=='uczen') return 0;
+  if(calPianoHas) return 0;
+  if(calInstrumentType==='premium') return 49;
+  return 19;
+}
+
+function calUpdatePriceBox(){
+  const box = document.getElementById('calPriceBox');
+  if(!box) return;
+  const lessonBase = LESSON_BASE_PRICE;
+  const codeOk = document.getElementById('calPromo').value.trim().toLowerCase() === PROMO_CODE;
+  const deliveryFee = calDeliveryFee();
+  const lessonPrice = codeOk ? lessonBase*(1-PROMO_DISCOUNT) : lessonBase;
+  const total = lessonPrice + deliveryFee;
+  let html = '';
+  if(codeOk){
+    html += '<span class="cw-price-old">'+formatPLN(lessonBase+deliveryFee)+' zł</span><span class="cw-price-new">'+formatPLN(total)+' zł / h</span>';
+    if(deliveryFee>0) html += '<div class="cw-price-note">'+CT.discountNote1+deliveryFee+CT.discountNote2+'</div>';
+  }else{
+    html += '<span class="cw-price-plain">'+formatPLN(total)+' zł / h</span>';
+  }
+  box.innerHTML = html;
+}
+
+function calOnModeToggle(){
+  const checked = document.getElementById('calModeMnie').checked;
+  bookCtx.mode = checked ? 'mnie' : 'uczen';
+  calApplyModeToUI();
+  recalcCalBooking();
+}
+
+function calApplyModeToUI(){
+  const addrWrap = document.getElementById('calAddrWrap');
+  const pianoArea = document.getElementById('calPianoArea');
+  if(bookCtx.mode==='mnie'){
+    addrWrap.style.display = 'none';
+    pianoArea.style.display = 'none';
+    document.getElementById('calStreet').value = '';
+  }else{
+    addrWrap.style.display = 'block';
+    pianoArea.style.display = 'block';
+  }
+}
+
+function calPhoneInput(el){
+  el.value = el.value.replace(/\D/g,'').slice(0,9);
+  recalcCalBooking();
+}
+
+function calFormComplete(){
+  const name = document.getElementById('calName').value.trim();
+  const phoneDigits = document.getElementById('calPhone').value.replace(/\D/g,'');
+  const email = document.getElementById('calEmail').value.trim();
+  if(name.length<2) return false;
+  if(phoneDigits.length!==9) return false;
+  if(!email.includes('@') || !email.includes('.')) return false;
+  if(bookCtx && bookCtx.mode==='uczen'){
+    const street = document.getElementById('calStreet').value.trim();
+    if(street.length<3) return false;
+  }
+  return true;
+}
+
+let calStep = 1;
+function calGoStep(step){
+  if(step===3){
+    if(!calFormComplete()){
+      const errEl = document.getElementById('calBookError');
+      const name = document.getElementById('calName').value.trim();
+      const phoneDigits = document.getElementById('calPhone').value.replace(/\D/g,'');
+      const email = document.getElementById('calEmail').value.trim();
+      if(name.length<2 || phoneDigits.length!==9 || !email.includes('@') || !email.includes('.')){
+        errEl.textContent = CT.errFillContact;
+      }else{
+        errEl.textContent = CT.errFillStreet;
+      }
+      return;
+    }
+    document.getElementById('calBookError').textContent = '';
+    calBuildSummary();
+  }
+  calStep = step;
+  [1,2,3].forEach(n=>{
+    const el = document.getElementById('calStep'+n);
+    if(el) el.classList.toggle('show', n===step);
+  });
+}
+
+function calBuildSummary(){
+  const el = document.getElementById('calSummary');
+  if(!bookCtx || !el) return;
+  const start = bookCtx.start, end = bookCtx.end;
+  const dateLabel = WEEKDAY_FULL[start.getDay()]+', '+start.getDate()+' '+MONTH_NAMES[start.getMonth()]+' '+start.getFullYear();
+  const timeLabel = String(start.getHours()).padStart(2,'0')+':'+String(start.getMinutes()).padStart(2,'0')
+    +'–'+String(end.getHours()).padStart(2,'0')+':'+String(end.getMinutes()).padStart(2,'0');
+  const modeLabel = bookCtx.mode==='mnie' ? CT.modeAtTeacher+TEACHER_ADDRESS+')' : CT.modeAtStudent;
+  const name = document.getElementById('calName').value.trim();
+  const phoneDigits = document.getElementById('calPhone').value.replace(/\D/g,'');
+  const email = document.getElementById('calEmail').value.trim();
+  const city = document.getElementById('calCity').value;
+  const street = document.getElementById('calStreet').value.trim();
+  const promo = document.getElementById('calPromo').value.trim();
+  const codeOk = promo.toLowerCase() === PROMO_CODE;
+  const deliveryFee = calDeliveryFee();
+  const lessonBase = LESSON_BASE_PRICE;
+  const lessonPrice = codeOk ? lessonBase*(1-PROMO_DISCOUNT) : lessonBase;
+  const total = lessonPrice + deliveryFee;
+
+  const row = (label, val) => '<div class="bs-row"><span>'+label+'</span><b>'+val+'</b></div>';
+  let html = '';
+  html += row(CT.sumTermin, dateLabel+CT.timeConnector+timeLabel);
+  html += row(CT.sumMiejsce, modeLabel);
+  if(bookCtx.mode==='uczen'){
+    const pianoLine = calPianoHas ? CT.sumHasPiano : CT.sumDelivery+(calInstrumentType==='premium'?'Yamaha P-525':'Roland GO:PIANO88PX')+' ('+deliveryFee+' zł)';
+    html += row(CT.sumPianino, pianoLine);
+    if(street) html += row(CT.sumAddress, street+', '+city);
+  }
+  html += row(CT.sumName, name);
+  html += row(CT.sumPhone, '+48 '+phoneDigits);
+  html += row(CT.sumEmail, email);
+  if(promo) html += row(CT.sumPromo, promo+(codeOk?CT.sumPromoValid:CT.sumPromoInvalid));
+  html += row(CT.sumPrice, formatPLN(total)+' zł / h');
+  el.innerHTML = html;
+}
+
+function recalcCalBooking(){
+  if(!bookCtx) return true;
+  calUpdatePriceBox();
+  const start = new Date(bookCtx.dayDate); start.setHours(bookCtx.hour, bookCtx.minute||0, 0, 0);
+  const end = new Date(start.getTime() + bookCtx.duration*60000);
+  bookCtx.start = start; bookCtx.end = end;
+
+  const valid = isCandidateValid(start, end, bookCtx.mode, bookCtx.windows, busyIntervals);
+  const errEl = document.getElementById('calBookError');
+  const btn = document.getElementById('calBookSubmitBtn');
+  const nextBtn = document.getElementById('calStep1NextBtn');
+
+  if(!valid){
+    errEl.textContent = CT.errBuffer;
+    if(nextBtn) nextBtn.disabled = true;
+    btn.disabled = true;
+    return false;
+  }
+  errEl.textContent = '';
+  if(nextBtn) nextBtn.disabled = false;
+
+  const endLabel = String(end.getHours()).padStart(2,'0')+':'+String(end.getMinutes()).padStart(2,'0');
+  const startLabel = String(start.getHours()).padStart(2,'0')+':'+String(start.getMinutes()).padStart(2,'0');
+  document.getElementById('calBookWhen').textContent =
+    WEEKDAY_FULL[start.getDay()]+', '+start.getDate()+' '+MONTH_NAMES[start.getMonth()]+' '+start.getFullYear()
+    +CT.timeConnector+startLabel+'–'+endLabel;
+
+  btn.disabled = !calFormComplete();
+  return true;
+}
+
+function closeCalBook(){
+  document.getElementById('calBookPanel').classList.remove('show');
+  document.querySelectorAll('.slot-pill').forEach(p=>p.classList.remove('selected'));
+  bookCtx = null;
+}
+
+async function submitCalBooking(){
+  if(!bookCtx) return;
+  const name = document.getElementById('calName').value.trim();
+  const phoneDigits = document.getElementById('calPhone').value.replace(/\D/g,'');
+  const phone = '+48 '+phoneDigits;
+  const email = document.getElementById('calEmail').value.trim();
+  const city = document.getElementById('calCity').value;
+  const street = document.getElementById('calStreet').value.trim();
+  const fullAddress = street ? (street+', '+city) : city;
+  const status = document.getElementById('calBookStatus');
+  const errEl = document.getElementById('calBookError');
+  const submitBtn = document.getElementById('calBookSubmitBtn');
+
+  if(name.length<2 || phoneDigits.length!==9 || !email.includes('@')){
+    errEl.textContent = CT.errFillContact;
+    return;
+  }
+  if(bookCtx.mode==='uczen' && street.length<3){
+    errEl.textContent = CT.errFillStreet;
+    return;
+  }
+  if(!recalcCalBooking()){
+    return;
+  }
+  errEl.textContent = '';
+
+  const eventTitle = 'pianino — '+name+' — prośba o lekcję';
+  const promoCode = document.getElementById('calPromo').value.trim();
+  const promoOk = promoCode.toLowerCase() === PROMO_CODE;
+  const modeLabel = bookCtx.mode==='mnie' ? 'U nauczyciela' : 'U ucznia — dojazd';
+  const address = bookCtx.mode==='mnie' ? TEACHER_ADDRESS : fullAddress;
+
+  /* Cena: baza (-60% jeśli poprawny kod), dowóz ZAWSZE bez rabatu */
+  const baseBefore = LESSON_BASE_PRICE;
+  const baseAfter = promoOk ? baseBefore*(1-PROMO_DISCOUNT) : baseBefore;
+  const deliveryFee = calDeliveryFee();
+  const totalPrice = baseAfter + deliveryFee;
+  const priceBreakdown = (promoOk ? formatPLN(baseAfter)+' zł (baza '+baseBefore+' zł -60% rabat)' : baseBefore+' zł (cena bazowa)')
+    + (deliveryFee ? ' + '+deliveryFee+' zł (dowóz, bez rabatu)' : '');
+
+  let pianoOpis = '—';
+  if(bookCtx.mode==='uczen'){
+    if(calPianoHas) pianoOpis = 'Tak';
+    else if(calInstrumentType==='premium') pianoOpis = 'Nie — dowóz: Yamaha P-525, 49 zł';
+    else pianoOpis = 'Nie — dowóz: Roland GO:PIANO88PX, '+deliveryFee+' zł';
+  }
+
+  const payload = {
+    typ: 'rezerwacja-kalendarz',
+    imie_nazwisko: name,
+    telefon: phone,
+    email: email,
+    miejsce: address,
+    pianino: pianoOpis,
+    tresc: modeLabel+'\nAdres: '+address+'\nTel: '+phone+'\nEmail: '+email,
+    kod_rabatowy: promoCode,
+    cena: formatPLN(totalPrice)+' zł łącznie — '+priceBreakdown,
+    data_start: bookCtx.start.toISOString(),
+    data_koniec: bookCtx.end.toISOString(),
+    tytul_wydarzenia: eventTitle,
+    data: new Date().toLocaleString('pl-PL'),
+    owner_email: OWNER_EMAIL
+  };
+
+  submitBtn.disabled = true;
+  status.style.color = 'var(--text-mid)';
+  status.textContent = CT.sending;
+
+  try{
+    const r = await fetch(FORM_WEBHOOK, {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(payload)});
+    const text = await r.text();
+    if(!r.ok && !text.toLowerCase().includes('accepted')) throw new Error('HTTP '+r.status);
+    status.textContent = '';
+    showToast(CT.bookedToast);
+    document.getElementById('calConfirmOverlay').classList.add('show');
+  }catch(e){
+    status.style.color = '#f87171';
+    status.textContent = CT.sendErr;
+    showToast(CT.sendErrToast, true);
+    submitBtn.disabled = false;
+  }
+}
+
+function closeCalBookConfirm(){
+  document.getElementById('calConfirmOverlay').classList.remove('show');
+  closeCalBook();
+  document.getElementById('calBookStatus').textContent = '';
+  ['calName','calPhone','calEmail','calStreet','calPromo'].forEach(id=>document.getElementById(id).value='');
+  calResetPianoState();
+  document.getElementById('calCity').value = 'Gdynia';
+  document.getElementById('calBookSubmitBtn').disabled = false;
+  renderCalDays();
+}
+
+
+
+</script>
 
 </body>
 </html>
