@@ -527,12 +527,6 @@ footer a:hover{color:var(--ink);border-color:var(--accent);}
         <div class="cal-loading">Ładowanie kalendarza…</div>
       </div>
 
-      <div class="color-legend">
-        <span><i class="cl-dot cl-gold"></i>u ucznia</span>
-        <span><i class="cl-dot cl-blue"></i>u nauczyciela</span>
-        <span><i class="cl-dot cl-green"></i>u nauczyciela lub u ucznia</span>
-      </div>
-
       <div class="detail-panel" id="detailPanel">
         <div class="slots-heading" id="slotsHeading"></div>
         <div class="slots-grid" id="slotsGrid"></div>
@@ -941,8 +935,6 @@ function isCandidateValid(start, end, mode, windows, busy){
 function candidateModesAt(dayDate, hour, minute, windows, busy){
   const start = new Date(dayDate); start.setHours(hour, minute, 0, 0);
   const modes = new Set();
-  const mnieEnd = new Date(start.getTime()+MNIE_DURATION*60000);
-  if(isCandidateValid(start, mnieEnd, 'mnie', windows, busy)) modes.add('mnie');
   const uczenEnd = new Date(start.getTime()+UCZEN_DURATIONS[0]*60000);
   if(isCandidateValid(start, uczenEnd, 'uczen', windows, busy)) modes.add('uczen');
   return modes;
@@ -1152,15 +1144,7 @@ function openCalBook(key, hour, minute){
   document.getElementById('calBookStatus').textContent = '';
 
   const modeArea = document.getElementById('calModeArea');
-  if(bothAvailable){
-    modeArea.innerHTML = '<label class="mode-row"><input type="checkbox" id="calModeMnie" checked onchange="calOnModeToggle()"><span>'+CT.lessonAtTeacher+TEACHER_ADDRESS+')</span></label>';
-  }else if(defaultMode==='mnie'){
-    modeArea.innerHTML = '<div class="mode-row mode-row-locked"><span class="mode-check-locked on">✓</span><span>'+CT.lessonAtTeacher+TEACHER_ADDRESS+')</span></div>'
-      + '<div class="mode-note">'+CT.lockedOnlyTeacherNote+'</div>';
-  }else{
-    modeArea.innerHTML = '<div class="mode-row mode-row-locked"><span class="mode-check-locked off"></span><span class="mode-strike">'+CT.lessonAtTeacher+TEACHER_ADDRESS+')</span></div>'
-      + '<div class="mode-note">'+CT.lockedOnlyStudentNote+'</div>';
-  }
+  modeArea.innerHTML = '';
 
   calApplyModeToUI();
   document.getElementById('calBookError').textContent = '';
