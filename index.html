@@ -170,9 +170,12 @@ ul.plain li::before{
 .watermark{background-repeat:no-repeat;background-size:cover;}
 .watermark-hero{
   background-image:linear-gradient(rgba(246,242,234,0.9),rgba(246,242,234,0.94) 70%,var(--bg) 100%),url('/grafiki/senior-gra.webp');
-  background-position:center 30%;
+  background-position:85% 35%;
   padding-top:38px;
   padding-bottom:70px;
+}
+@media(max-width:560px){
+  .watermark-hero{background-position:100% 35%;}
 }
 
 .faq-item{padding:18px 0;border-top:1px solid var(--line);}
