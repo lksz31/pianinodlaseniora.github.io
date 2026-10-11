@@ -50,7 +50,7 @@
   "@context": "https://schema.org",
   "@type": "FAQPage",
   "mainEntity": [
-    { "@type": "Question", "name": "Mieszkam w innym mieście — da się to ogarnąć?", "acceptedAnswer": { "@type": "Answer", "text": "Tak. Wszystko ustalam telefonicznie lub mailowo bezpośrednio z Tobą — termin, adres, szczegóły. Zajęcia odbywają się na miejscu, z Twoim bliskim." } },
+    { "@type": "Question", "name": "Mieszkam w innym mieście — da się to ogarnąć?", "acceptedAnswer": { "@type": "Answer", "text": "Tak. Wszystko ustalam telefonicznie lub mailowo bezpośrednio z Tobą — w tym cenę, którą ustalam indywidualnie podczas kontaktu, w zależności od lokalizacji. Zajęcia odbywają się na miejscu, z Twoim bliskim." } },
     { "@type": "Question", "name": "Czy to nie jest już za późno na naukę pianina?", "acceptedAnswer": { "@type": "Answer", "text": "Nie. Mózg zachowuje zdolność uczenia się przez całe życie. Uczniowie zaczynają po 60., 70., a nawet 80. roku życia." } },
     { "@type": "Question", "name": "Czy trzeba mieć własne pianino?", "acceptedAnswer": { "@type": "Answer", "text": "Nie — instrument przywożę na miejsce." } },
     { "@type": "Question", "name": "Czy to jest terapia zajęciowa?", "acceptedAnswer": { "@type": "Answer", "text": "Nie w sensie medycznym — to zajęcia edukacyjne i aktywizujące, nauka gry na pianinie. Nie zastępują konsultacji specjalistycznej, ale regularna gra wspiera pamięć, koncentrację i sprawność manualną." } },
@@ -162,6 +162,12 @@ ul.plain li::before{
 .faq-item:first-child{border-top:none;}
 .faq-q{font-weight:bold;margin:0 0 6px;}
 .faq-a{color:var(--ink-mid);margin:0;}
+
+.opinia-item{padding:18px 0;border-top:1px solid var(--line);}
+.opinia-item:first-child{border-top:none;}
+.opinia-text{font-style:italic;margin:0 0 6px;}
+.opinia-author{color:var(--accent);font-weight:bold;margin:0;font-size:0.92rem;}
+.opinia-source{color:var(--ink-mid);font-size:0.88rem;margin-top:18px;}
 
 footer{border-top:1px solid var(--line);color:var(--ink-mid);font-size:0.92rem;}
 footer a{color:var(--ink-mid);text-decoration:none;border-bottom:1px solid var(--line);}
@@ -377,12 +383,35 @@ footer a:hover{color:var(--ink);border-color:var(--accent);}
     </div>
   </section>
 
+  <section id="opinie">
+    <div class="wrap">
+      <div class="eyebrow">Opinie</div>
+      <div class="opinia-item">
+        <p class="opinia-text">„Łukasz jest bardzo dobrym nauczycielem – zaangażowany, spokojny i zawsze dobrze przygotowany. Polecam każdemu, kto chce uczyć się gry na pianinie w miłej i bezstresowej atmosferze.”</p>
+        <p class="opinia-author">— Magda</p>
+      </div>
+      <div class="opinia-item">
+        <p class="opinia-text">„Łukasz jest naprawdę godny polecenia! Lekcje bez stresu, bardzo miła atmosfera oraz przede wszystkim obszerna wiedza!”</p>
+        <p class="opinia-author">— Zuzanna</p>
+      </div>
+      <div class="opinia-item">
+        <p class="opinia-text">„Uważam, że Łukasz to naprawdę uczciwa i pracowita osoba. Ma duże doświadczenie związane z muzyką, dlatego myślę, że jeśli potrzebujesz pomocy, to Łukasz Ci to zagwarantuje.”</p>
+        <p class="opinia-author">— Klara</p>
+      </div>
+      <div class="opinia-item">
+        <p class="opinia-text">„Pan Łukasz to świetny nauczyciel gry na pianinie. Ma doskonałe podejście do uczniów, potrafi zmotywować i sprawia, że nauka jest prawdziwą przyjemnością. Z nim każdy postęp daje ogromną satysfakcję. Serdecznie polecam!”</p>
+        <p class="opinia-author">— Julia</p>
+      </div>
+      <p class="opinia-source">Opinie uczniów z lekcjepianinagdynia.pl · <a href="https://www.superprof.pl/lekcje-pianina-60min-99zl-podstaw-srednioozawansowanych-umow-mna-lekcje-514-338-875.html" target="_blank">5.0/5 na Superprof</a></p>
+    </div>
+  </section>
+
   <section id="pytania">
     <div class="wrap">
       <div class="eyebrow">Pytania</div>
       <div class="faq-item">
         <p class="faq-q">Mieszkam w innym mieście — da się to ogarnąć?</p>
-        <p class="faq-a">Tak. Wszystko ustalam telefonicznie lub mailowo bezpośrednio z Tobą. Zajęcia odbywają się na miejscu, z Twoim bliskim.</p>
+        <p class="faq-a">Tak. Wszystko ustalam telefonicznie lub mailowo bezpośrednio z Tobą — w tym cenę, którą ustalam indywidualnie podczas kontaktu, w zależności od lokalizacji. Zajęcia odbywają się na miejscu, z Twoim bliskim.</p>
       </div>
       <div class="faq-item">
         <p class="faq-q">Czy to nie jest już za późno na naukę pianina?</p>
@@ -423,6 +452,7 @@ footer a:hover{color:var(--ink);border-color:var(--accent);}
       <ul class="footer-links">
         <li><a href="#jak-to-wyglada">Jak to wygląda</a></li>
         <li><a href="#cena">Cena</a></li>
+        <li><a href="#opinie">Opinie</a></li>
         <li><a href="#pytania">Pytania</a></li>
         <li><a href="#o-mnie">O mnie</a></li>
       </ul>
