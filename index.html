@@ -185,11 +185,14 @@ ul.plain li::before{
 footer{border-top:1px solid var(--line);color:var(--ink-mid);font-size:0.92rem;}
 footer a{color:var(--ink-mid);text-decoration:none;border-bottom:1px solid var(--line);}
 footer a:hover{color:var(--ink);border-color:var(--accent);}
-.footer-main{display:grid;grid-template-columns:1.3fr 1fr 1fr auto;gap:32px;padding:44px 0 28px;}
-.footer-logo{width:26px;height:26px;border-radius:6px;vertical-align:middle;margin-right:8px;}
-.footer-brand{display:flex;align-items:center;font-weight:bold;font-size:1.1rem;color:var(--ink);}
+.footer-main{display:grid;grid-template-columns:1.4fr 1.3fr auto;gap:32px;padding:44px 0 28px;}
+.footer-logo{width:46px;height:46px;border-radius:9px;margin-right:12px;flex-shrink:0;}
+.footer-brand{display:flex;align-items:center;gap:0;font-weight:bold;font-size:1.15rem;color:var(--ink);margin-bottom:4px;}
 .footer-tagline{color:var(--ink-mid);font-size:0.9rem;margin:2px 0 16px;}
 .footer-contacts div{margin-bottom:6px;}
+.footer-also{color:var(--ink-mid);font-size:0.92rem;margin-top:14px;}
+.footer-links.cols-2{column-count:2;column-gap:20px;}
+.footer-links.cols-2 li{break-inside:avoid;}
 .footer-label{color:var(--ink-mid);display:inline-block;width:3.6em;}
 .footer-col-title{font-weight:bold;font-size:0.78rem;text-transform:uppercase;letter-spacing:0.1em;color:var(--accent);margin-bottom:12px;}
 .footer-links{list-style:none;padding:0;margin:0;}
@@ -204,6 +207,7 @@ footer a:hover{color:var(--ink);border-color:var(--accent);}
   .footer-main>div:first-child{border-top:none;padding-top:0;}
   .footer-cta-col{border-top:1px solid var(--line);padding:22px 0;}
   .footer-cta-col .btn{width:100%;text-align:center;}
+  .footer-links.cols-2{column-count:1;}
 }
 
 @media(max-width:480px){
@@ -477,22 +481,17 @@ footer a:hover{color:var(--ink);border-color:var(--accent);}
         <div><span class="footer-label">Email</span><a href="mailto:lukaszgkorepetycje@gmail.com">lukaszgkorepetycje@gmail.com</a></div>
         <div><span class="footer-label">WWW</span><a href="https://pianinodlaseniora.pl">pianinodlaseniora.pl</a></div>
       </div>
+      <div class="footer-also">Zobacz też: <a href="https://lekcjepianinagdynia.pl/" target="_blank">lekcjepianinagdynia.pl</a></div>
     </div>
     <div>
       <div class="footer-col-title">Nawigacja</div>
-      <ul class="footer-links">
+      <ul class="footer-links cols-2">
         <li><a href="#skad-pomysl">Skąd ten pomysł</a></li>
         <li><a href="#jak-to-wyglada">Jak to wygląda</a></li>
         <li><a href="#cena">Cena</a></li>
         <li><a href="#opinie">Opinie</a></li>
         <li><a href="#pytania">Pytania</a></li>
         <li><a href="#o-mnie">O mnie</a></li>
-      </ul>
-    </div>
-    <div>
-      <div class="footer-col-title">Zobacz też</div>
-      <ul class="footer-links">
-        <li><a href="https://lekcjepianinagdynia.pl/" target="_blank">lekcjepianinagdynia.pl</a></li>
       </ul>
     </div>
     <div class="footer-cta-col">
