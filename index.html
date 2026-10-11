@@ -173,14 +173,21 @@ ul.plain li::before{
 
 .faq-item{padding:18px 0;border-top:1px solid var(--line);}
 .faq-item:first-child{border-top:none;}
-.faq-q{font-weight:bold;margin:0 0 6px;}
-.faq-a{color:var(--ink-mid);margin:0;}
+.faq-q{font-weight:bold;cursor:pointer;list-style:none;display:flex;justify-content:space-between;align-items:center;gap:12px;}
+.faq-q::-webkit-details-marker{display:none;}
+.faq-q::after{content:"+";color:var(--accent);font-weight:bold;font-size:1.2rem;flex-shrink:0;transition:transform 0.2s;}
+.faq-item[open] .faq-q::after{content:"−";}
+.faq-item .faq-a{color:var(--ink-mid);margin:12px 0 0;}
 
-.opinia-item{padding:18px 0;border-top:1px solid var(--line);}
-.opinia-item:first-child{border-top:none;}
+.opinia-carousel{min-height:130px;opacity:1;transition:opacity 0.25s ease;}
+.opinia-carousel.fade{opacity:0;}
 .opinia-text{font-style:italic;margin:0 0 6px;}
 .opinia-author{color:var(--accent);font-weight:bold;margin:0;font-size:0.92rem;}
+.opinia-dots{display:flex;gap:8px;margin-top:16px;}
+.opinia-dot{width:7px;height:7px;border-radius:50%;background:var(--line);border:none;padding:0;cursor:pointer;}
+.opinia-dot.on{background:var(--accent);}
 .opinia-source{color:var(--ink-mid);font-size:0.88rem;margin-top:18px;}
+@media(max-width:480px){.opinia-carousel{min-height:170px;}}
 
 footer{border-top:1px solid var(--line);color:var(--ink-mid);font-size:0.92rem;}
 footer a{color:var(--ink-mid);text-decoration:none;border-bottom:1px solid var(--line);}
@@ -421,22 +428,11 @@ footer a:hover{color:var(--ink);border-color:var(--accent);}
   <section id="opinie">
     <div class="wrap">
       <div class="eyebrow">Opinie</div>
-      <div class="opinia-item">
-        <p class="opinia-text">„Łukasz jest bardzo dobrym nauczycielem – zaangażowany, spokojny i zawsze dobrze przygotowany. Polecam każdemu, kto chce uczyć się gry na pianinie w miłej i bezstresowej atmosferze.”</p>
-        <p class="opinia-author">— Magda</p>
+      <div class="opinia-carousel" id="opiniaCarousel">
+        <p class="opinia-text" id="opiniaText"></p>
+        <p class="opinia-author" id="opiniaAuthor"></p>
       </div>
-      <div class="opinia-item">
-        <p class="opinia-text">„Łukasz jest naprawdę godny polecenia! Lekcje bez stresu, bardzo miła atmosfera oraz przede wszystkim obszerna wiedza!”</p>
-        <p class="opinia-author">— Zuzanna</p>
-      </div>
-      <div class="opinia-item">
-        <p class="opinia-text">„Uważam, że Łukasz to naprawdę uczciwa i pracowita osoba. Ma duże doświadczenie związane z muzyką, dlatego myślę, że jeśli potrzebujesz pomocy, to Łukasz Ci to zagwarantuje.”</p>
-        <p class="opinia-author">— Klara</p>
-      </div>
-      <div class="opinia-item">
-        <p class="opinia-text">„Pan Łukasz to świetny nauczyciel gry na pianinie. Ma doskonałe podejście do uczniów, potrafi zmotywować i sprawia, że nauka jest prawdziwą przyjemnością. Z nim każdy postęp daje ogromną satysfakcję. Serdecznie polecam!”</p>
-        <p class="opinia-author">— Julia</p>
-      </div>
+      <div class="opinia-dots" id="opiniaDots"></div>
       <p class="opinia-source">Opinie uczniów z lekcjepianinagdynia.pl · <a href="https://www.superprof.pl/lekcje-pianina-60min-99zl-podstaw-srednioozawansowanych-umow-mna-lekcje-514-338-875.html" target="_blank">5.0/5 na Superprof</a></p>
     </div>
   </section>
@@ -444,22 +440,22 @@ footer a:hover{color:var(--ink);border-color:var(--accent);}
   <section id="pytania">
     <div class="wrap">
       <div class="eyebrow">Pytania</div>
-      <div class="faq-item">
-        <p class="faq-q">Mieszkam w innym mieście — da się to ogarnąć?</p>
+      <details class="faq-item" open>
+        <summary class="faq-q">Mieszkam w innym mieście — da się to ogarnąć?</summary>
         <p class="faq-a">Tak. Wszystko ustalam telefonicznie lub mailowo bezpośrednio z Tobą — w tym cenę, którą ustalam indywidualnie podczas kontaktu, w zależności od lokalizacji. Zajęcia odbywają się na miejscu, z Twoim bliskim.</p>
-      </div>
-      <div class="faq-item">
-        <p class="faq-q">Czy to nie jest już za późno na naukę pianina?</p>
+      </details>
+      <details class="faq-item">
+        <summary class="faq-q">Czy to nie jest już za późno na naukę pianina?</summary>
         <p class="faq-a">Nie. Mózg uczy się przez całe życie. Uczniowie zaczynają po 60., 70., a nawet 80. roku życia.</p>
-      </div>
-      <div class="faq-item">
-        <p class="faq-q">Czy trzeba mieć pianino?</p>
+      </details>
+      <details class="faq-item">
+        <summary class="faq-q">Czy trzeba mieć pianino?</summary>
         <p class="faq-a">Nie, przywożę instrument na miejsce.</p>
-      </div>
-      <div class="faq-item">
-        <p class="faq-q">Czy to jest terapia?</p>
+      </details>
+      <details class="faq-item">
+        <summary class="faq-q">Czy to jest terapia?</summary>
         <p class="faq-a">Nie w sensie medycznym — to zajęcia edukacyjne i aktywizujące. Nie zastępują konsultacji specjalistycznej.</p>
-      </div>
+      </details>
     </div>
   </section>
 
@@ -615,6 +611,44 @@ footer a:hover{color:var(--ink);border-color:var(--accent);}
 </div>
 
 <script>
+const OPINIE = [
+  {text: '„Łukasz jest bardzo dobrym nauczycielem – zaangażowany, spokojny i zawsze dobrze przygotowany. Polecam każdemu, kto chce uczyć się gry na pianinie w miłej i bezstresowej atmosferze.”', author: '— Magda'},
+  {text: '„Łukasz jest naprawdę godny polecenia! Lekcje bez stresu, bardzo miła atmosfera oraz przede wszystkim obszerna wiedza!”', author: '— Zuzanna'},
+  {text: '„Uważam, że Łukasz to naprawdę uczciwa i pracowita osoba. Ma duże doświadczenie związane z muzyką, dlatego myślę, że jeśli potrzebujesz pomocy, to Łukasz Ci to zagwarantuje.”', author: '— Klara'},
+  {text: '„Pan Łukasz to świetny nauczyciel gry na pianinie. Ma doskonałe podejście do uczniów, potrafi zmotywować i sprawia, że nauka jest prawdziwą przyjemnością. Z nim każdy postęp daje ogromną satysfakcję. Serdecznie polecam!”', author: '— Julia'}
+];
+let opiniaIdx = 0;
+let opiniaTimer = null;
+function buildOpiniaDots(){
+  const dots = document.getElementById('opiniaDots');
+  if(!dots) return;
+  dots.innerHTML = OPINIE.map((_,i)=>'<button class="opinia-dot'+(i===opiniaIdx?' on':'')+'" aria-label="Opinia '+(i+1)+'" onclick="showOpinia('+i+');resetOpiniaTimer();"></button>').join('');
+}
+function fillOpinia(i){
+  document.getElementById('opiniaText').textContent = OPINIE[i].text;
+  document.getElementById('opiniaAuthor').textContent = OPINIE[i].author;
+}
+function showOpinia(i){
+  const c = document.getElementById('opiniaCarousel');
+  if(!c) return;
+  c.classList.add('fade');
+  setTimeout(()=>{
+    opiniaIdx = i;
+    fillOpinia(i);
+    buildOpiniaDots();
+    c.classList.remove('fade');
+  }, 250);
+}
+function resetOpiniaTimer(){
+  if(opiniaTimer) clearInterval(opiniaTimer);
+  opiniaTimer = setInterval(()=>{ showOpinia((opiniaIdx+1)%OPINIE.length); }, 6000);
+}
+if(document.getElementById('opiniaCarousel')){
+  fillOpinia(0);
+  buildOpiniaDots();
+  resetOpiniaTimer();
+}
+
 const FORM_WEBHOOK = "https://hook.eu1.make.com/3w8cbmpc1v3fff8k0qq4fk6w8mo81wd6";
 const OWNER_EMAIL = "lukaszgkorepetycje@gmail.com";
 
