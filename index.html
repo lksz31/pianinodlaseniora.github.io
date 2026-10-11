@@ -157,18 +157,22 @@ ul.plain li::before{
 .price-line{font-size:1.15rem;margin:0;}
 .price-line b{font-size:1.5rem;}
 .price-note{color:var(--ink-mid);font-size:0.95rem;margin-top:10px;}
-#dlaczego-warto p{margin:0 0 16px;line-height:1.75;position:relative;}
+#dlaczego-warto p{margin:0 0 16px;line-height:1.75;}
 #dlaczego-warto p:last-child{margin-bottom:0;}
+#dlaczego-warto .wrap{display:flex;align-items:flex-start;gap:30px;}
+#dlaczego-warto .dw-img{width:190px;flex-shrink:0;border-radius:18px;display:block;}
+#dlaczego-warto .dw-text{flex:1;min-width:0;}
+@media(max-width:560px){
+  #dlaczego-warto .wrap{flex-direction:column;align-items:center;}
+  #dlaczego-warto .dw-img{width:160px;margin-bottom:6px;}
+}
 
 .watermark{background-repeat:no-repeat;background-size:cover;}
 .watermark-hero{
   background-image:linear-gradient(rgba(246,242,234,0.9),rgba(246,242,234,0.94) 70%,var(--bg) 100%),url('/grafiki/senior-gra.webp');
   background-position:center 30%;
+  padding-top:38px;
   padding-bottom:70px;
-}
-.watermark-skad{
-  background-image:linear-gradient(rgba(246,242,234,0.93),rgba(246,242,234,0.93)),url('/grafiki/donie-klawisze.webp');
-  background-position:center 60%;
 }
 
 .faq-item{padding:18px 0;border-top:1px solid var(--line);}
@@ -193,19 +197,19 @@ footer{border-top:1px solid var(--line);color:var(--ink-mid);font-size:0.92rem;}
 footer a{color:var(--ink-mid);text-decoration:none;border-bottom:1px solid var(--line);}
 footer a:hover{color:var(--ink);border-color:var(--accent);}
 .footer-main{display:grid;grid-template-columns:1.3fr 1.5fr 1fr;gap:32px;padding:44px 0 28px;}
-.footer-logo{width:46px;height:46px;border-radius:9px;margin-right:12px;flex-shrink:0;}
-.footer-brand{display:flex;align-items:center;gap:0;font-weight:bold;font-size:1.1rem;color:var(--ink);margin-bottom:4px;white-space:nowrap;}
-.footer-tagline{color:var(--ink-mid);font-size:0.9rem;margin:2px 0 16px;}
+.footer-logo{width:58px;height:58px;border-radius:12px;margin-right:12px;flex-shrink:0;}
+.footer-brand{display:flex;align-items:center;gap:0;font-weight:bold;font-size:1.1rem;color:var(--ink);margin-bottom:18px;white-space:nowrap;}
 .footer-contacts div{margin-bottom:6px;}
 .footer-also{color:var(--ink-mid);font-size:0.92rem;margin-top:14px;}
 .footer-links.cols-2{column-count:2;column-gap:20px;}
 .footer-links.cols-2 li{break-inside:avoid;}
 .footer-label{color:var(--ink-mid);display:inline-block;width:3.6em;}
 .footer-col-title{font-weight:bold;font-size:0.78rem;text-transform:uppercase;letter-spacing:0.1em;color:var(--accent);margin-bottom:12px;}
-.footer-links{list-style:none;padding:0;margin:0;}
+.footer-links{list-style:none;padding:0;margin:0;font-size:0.85rem;}
 .footer-links li{margin-bottom:8px;}
 .footer-cta-col{display:flex;align-items:flex-start;justify-content:flex-end;}
-.footer-cta-col .btn{padding:11px 20px;font-size:0.92rem;}
+.footer-cta-col .btn{padding:11px 20px;font-size:0.92rem;text-align:center;animation:footerCtaPulse 2s infinite;}
+@keyframes footerCtaPulse{0%{box-shadow:0 0 0 0 rgba(181,84,46,0.5);}70%{box-shadow:0 0 0 12px rgba(181,84,46,0);}100%{box-shadow:0 0 0 0 rgba(181,84,46,0);}}
 .footer-bottom{display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;padding:18px 0 40px;border-top:1px solid var(--line);font-size:0.85rem;}
 @media(max-width:680px){.footer-main{grid-template-columns:1fr 1fr;}.footer-cta-col{grid-column:1/-1;justify-content:flex-start;}}
 @media(max-width:480px){
@@ -404,12 +408,15 @@ footer a:hover{color:var(--ink);border-color:var(--accent);}
     </div>
   </section>
 
-  <section id="dlaczego-warto" class="watermark watermark-skad">
+  <section id="dlaczego-warto">
     <div class="wrap">
-      <div class="eyebrow">Dlaczego warto</div>
-      <p>Seniorom brakuje dziś wartościowych, indywidualnych zajęć. Jest gimnastyka w grupie, klub seniora, czasem Uniwersytet Trzeciego Wieku — ale niewiele propozycji dopasowanych do jednej osoby, w jej własnym tempie i we własnym domu.</p>
-      <p>Pomysł na pianino dla seniora wziął się z połączenia dwóch rzeczy. Nauka gry to trening pamięci i koncentracji — prawdziwa gimnastyka umysłu — a jednocześnie ćwiczenie sprawności palców i dłoni, czyli motoryki małej. Rzadko coś łączy jedno i drugie tak naturalnie.</p>
-      <p>To też po prostu lepsze zajęcie niż kolejna godzina przed telewizorem — kreatywne hobby, które daje satysfakcję z małych postępów i realnie może poprawić jakość życia.</p>
+      <img class="dw-img" src="/grafiki/donie-klawisze.webp" alt="Dłonie na klawiszach pianina" loading="lazy">
+      <div class="dw-text">
+        <div class="eyebrow">Dlaczego warto</div>
+        <p>Seniorom brakuje dziś wartościowych, indywidualnych zajęć. Jest gimnastyka w grupie, klub seniora, czasem Uniwersytet Trzeciego Wieku — ale niewiele propozycji dopasowanych do jednej osoby, w jej własnym tempie i we własnym domu.</p>
+        <p>Pomysł na pianino dla seniora wziął się z połączenia dwóch rzeczy. Nauka gry to trening pamięci i koncentracji — prawdziwa gimnastyka umysłu — a jednocześnie ćwiczenie sprawności palców i dłoni, czyli motoryki małej. Rzadko coś łączy jedno i drugie tak naturalnie.</p>
+        <p>To też po prostu lepsze zajęcie niż kolejna godzina przed telewizorem — kreatywne hobby, które daje satysfakcję z małych postępów i realnie może poprawić jakość życia.</p>
+      </div>
     </div>
   </section>
 
@@ -471,8 +478,8 @@ footer a:hover{color:var(--ink);border-color:var(--accent);}
   <div class="wrap footer-main">
     <div>
       <div class="footer-brand"><img src="/grafiki/favicon-96.png" alt="" class="footer-logo">Pianino dla Seniora</div>
-      <div class="footer-tagline">Lekcje pianina dla seniorów</div>
       <div class="footer-contacts">
+        <div class="footer-col-title">Kontakt</div>
         <div><span class="footer-label">Tel</span><a href="tel:514338875">514 338 875</a></div>
         <div><span class="footer-label">Email</span><a href="mailto:lukaszgkorepetycje@gmail.com">lukaszgkorepetycje@gmail.com</a></div>
         <div><span class="footer-label">WWW</span><a href="https://pianinodlaseniora.pl">pianinodlaseniora.pl</a></div>
