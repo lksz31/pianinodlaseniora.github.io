@@ -157,11 +157,19 @@ ul.plain li::before{
 .price-line{font-size:1.15rem;margin:0;}
 .price-line b{font-size:1.5rem;}
 .price-note{color:var(--ink-mid);font-size:0.95rem;margin-top:10px;}
-#skad-pomysl p{margin:0 0 16px;line-height:1.75;}
+#skad-pomysl p{margin:0 0 16px;line-height:1.75;position:relative;}
 #skad-pomysl p:last-child{margin-bottom:0;}
-.photo{width:100%;height:auto;display:block;border-bottom-left-radius:15%;border-bottom-right-radius:15%;}
-.photo-wide{margin-top:34px;}
-#skad-pomysl .photo{margin:20px 0;}
+
+.watermark{background-repeat:no-repeat;background-size:cover;}
+.watermark-hero{
+  background-image:linear-gradient(rgba(246,242,234,0.9),rgba(246,242,234,0.94) 70%,var(--bg) 100%),url('/grafiki/senior-gra.webp');
+  background-position:center 15%;
+  padding-bottom:70px;
+}
+.watermark-skad{
+  background-image:linear-gradient(rgba(246,242,234,0.93),rgba(246,242,234,0.93)),url('/grafiki/donie-klawisze.webp');
+  background-position:center 60%;
+}
 
 .faq-item{padding:18px 0;border-top:1px solid var(--line);}
 .faq-item:first-child{border-top:none;}
@@ -354,22 +362,22 @@ footer a:hover{color:var(--ink);border-color:var(--accent);}
 </header>
 
 <main>
-  <div class="wrap">
-    <h1>Zajęcie dla Twojego rodzica, które ma sens.</h1>
-    <p class="lede">Przyjeżdżam do seniora z pianinem, uczę w jego tempie, bez presji i egzaminów.</p>
-    <div class="cta-row">
-      <a class="btn btn-solid" href="#" onclick="openCalModal();return false;">Zarezerwuj termin</a>
-      <a class="btn btn-outline" href="tel:514338875">Zadzwoń: 514 338 875</a>
+  <div class="watermark watermark-hero">
+    <div class="wrap">
+      <h1>Zajęcie dla Twojego rodzica, które ma sens.</h1>
+      <p class="lede">Przyjeżdżam do seniora z pianinem, uczę w jego tempie, bez presji i egzaminów.</p>
+      <div class="cta-row">
+        <a class="btn btn-solid" href="#" onclick="openCalModal();return false;">Zarezerwuj termin</a>
+        <a class="btn btn-outline" href="tel:514338875">Zadzwoń: 514 338 875</a>
+      </div>
     </div>
-    <img src="/grafiki/senior-gra.webp" alt="Senior gra na pianinie w domu" class="photo photo-wide" width="1024" height="1024">
   </div>
 
-  <section id="skad-pomysl">
+  <section id="skad-pomysl" class="watermark watermark-skad">
     <div class="wrap">
       <div class="eyebrow">Skąd ten pomysł</div>
       <p>Seniorom brakuje dziś wartościowych, indywidualnych zajęć. Jest gimnastyka w grupie, klub seniora, czasem Uniwersytet Trzeciego Wieku — ale niewiele propozycji dopasowanych do jednej osoby, w jej własnym tempie i we własnym domu.</p>
       <p>Pomysł na pianino dla seniora wziął się z połączenia dwóch rzeczy. Nauka gry to trening pamięci i koncentracji — prawdziwa gimnastyka umysłu — a jednocześnie ćwiczenie sprawności palców i dłoni, czyli motoryki małej. Rzadko coś łączy jedno i drugie tak naturalnie.</p>
-      <img src="/grafiki/donie-klawisze.webp" alt="Dłonie seniora na klawiszach pianina" class="photo" width="1024" height="1024">
       <p>To też po prostu lepsze zajęcie niż kolejna godzina przed telewizorem — kreatywne hobby, które daje satysfakcję z małych postępów i realnie może poprawić jakość życia.</p>
     </div>
   </section>
