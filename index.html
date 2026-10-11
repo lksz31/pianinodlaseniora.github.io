@@ -156,9 +156,22 @@ ul.plain li::before{
 .faq-q{font-weight:bold;margin:0 0 6px;}
 .faq-a{color:var(--ink-mid);margin:0;}
 
-footer{padding:34px 0 50px;color:var(--ink-mid);font-size:0.92rem;}
-footer a{color:var(--ink-mid);text-decoration:underline;}
-footer .row{margin-bottom:6px;}
+footer{border-top:1px solid var(--line);color:var(--ink-mid);font-size:0.92rem;}
+footer a{color:var(--ink-mid);text-decoration:none;border-bottom:1px solid var(--line);}
+footer a:hover{color:var(--ink);border-color:var(--accent);}
+.footer-main{display:grid;grid-template-columns:1.3fr 1fr 1fr auto;gap:32px;padding:44px 0 28px;}
+.footer-brand{font-weight:bold;font-size:1.1rem;color:var(--ink);}
+.footer-tagline{color:var(--ink-mid);font-size:0.9rem;margin:2px 0 16px;}
+.footer-contacts div{margin-bottom:6px;}
+.footer-label{color:var(--ink-mid);display:inline-block;width:3.6em;}
+.footer-col-title{font-weight:bold;font-size:0.78rem;text-transform:uppercase;letter-spacing:0.1em;color:var(--accent);margin-bottom:12px;}
+.footer-links{list-style:none;padding:0;margin:0;}
+.footer-links li{margin-bottom:8px;}
+.footer-cta-col{display:flex;align-items:flex-start;}
+.footer-cta-col .btn{padding:11px 20px;font-size:0.92rem;}
+.footer-bottom{display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;padding:18px 0 40px;border-top:1px solid var(--line);font-size:0.85rem;}
+@media(max-width:680px){.footer-main{grid-template-columns:1fr 1fr;}.footer-cta-col{grid-column:1/-1;}}
+@media(max-width:480px){.footer-main{grid-template-columns:1fr;}}
 
 @media(max-width:480px){
   body{font-size:17px;}
@@ -186,7 +199,7 @@ footer .row{margin-bottom:6px;}
     </div>
   </div>
 
-  <section>
+  <section id="jak-to-wyglada">
     <div class="wrap">
       <div class="eyebrow">Jak to wygląda</div>
       <ol class="plain">
@@ -198,7 +211,7 @@ footer .row{margin-bottom:6px;}
     </div>
   </section>
 
-  <section>
+  <section id="cena">
     <div class="wrap">
       <div class="eyebrow">Cena</div>
       <p class="price-line"><b>119 zł</b> za godzinę.</p>
@@ -218,7 +231,7 @@ footer .row{margin-bottom:6px;}
     </div>
   </section>
 
-  <section>
+  <section id="pytania">
     <div class="wrap">
       <div class="eyebrow">Pytania</div>
       <div class="faq-item">
@@ -240,7 +253,7 @@ footer .row{margin-bottom:6px;}
     </div>
   </section>
 
-  <section>
+  <section id="o-mnie">
     <div class="wrap">
       <div class="eyebrow">Prowadzę to ja</div>
       <p style="color:var(--ink-mid);">Nazywam się Łukasz Ganczarek. Od blisko dwóch lat uczę gry na pianinie w Gdyni i Sopocie — dzieci, dorosłych i seniorów. Ukończyłem Szkołę Muzyczną I i II stopnia im. Zygmunta Noskowskiego w Gdyni i gram zawodowo na pianinie oraz oboju. Prowadzę również lekcje pianina dla dzieci i dorosłych: <a href="https://lekcjepianinagdynia.pl/">lekcjepianinagdynia.pl</a>.</p>
@@ -249,10 +262,38 @@ footer .row{margin-bottom:6px;}
 </main>
 
 <footer>
-  <div class="wrap">
-    <div class="row"><a href="tel:514338875">514 338 875</a> · <a href="mailto:lukaszgkorepetycje@gmail.com">lukaszgkorepetycje@gmail.com</a></div>
-    <div class="row">Gdynia · Sopot · okolice</div>
-    <div class="row">© 2026 Pianino dla Seniora – Łukasz Ganczarek · <a href="/polityka-prywatnosci.html">Polityka prywatności</a></div>
+  <div class="wrap footer-main">
+    <div>
+      <div class="footer-brand">Pianino dla Seniora</div>
+      <div class="footer-tagline">Lekcje pianina dla seniorów</div>
+      <div class="footer-contacts">
+        <div><span class="footer-label">Tel</span><a href="tel:514338875">514 338 875</a></div>
+        <div><span class="footer-label">Email</span><a href="mailto:lukaszgkorepetycje@gmail.com">lukaszgkorepetycje@gmail.com</a></div>
+        <div><span class="footer-label">WWW</span><a href="https://pianinodlaseniora.pl">pianinodlaseniora.pl</a></div>
+      </div>
+    </div>
+    <div>
+      <div class="footer-col-title">Nawigacja</div>
+      <ul class="footer-links">
+        <li><a href="#jak-to-wyglada">Jak to wygląda</a></li>
+        <li><a href="#cena">Cena</a></li>
+        <li><a href="#pytania">Pytania</a></li>
+        <li><a href="#o-mnie">O mnie</a></li>
+      </ul>
+    </div>
+    <div>
+      <div class="footer-col-title">Zobacz też</div>
+      <ul class="footer-links">
+        <li><a href="https://lekcjepianinagdynia.pl/" target="_blank">lekcjepianinagdynia.pl</a></li>
+      </ul>
+    </div>
+    <div class="footer-cta-col">
+      <a href="https://lekcjepianinagdynia.pl/#terminy" class="btn btn-solid">Zarezerwuj termin</a>
+    </div>
+  </div>
+  <div class="wrap footer-bottom">
+    <span>Gdynia · Sopot · okolice</span>
+    <span>© 2026 Pianino dla Seniora – Łukasz Ganczarek · <a href="/polityka-prywatnosci.html">Polityka prywatności</a></span>
   </div>
 </footer>
 
